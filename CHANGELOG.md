@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.1.3
+
+- Added a largest-artifacts section to `findings.md`.
+- Added tests for largest-artifact ordering.
+- Added JSON report schema contract tests.
+- Kept scan behavior unchanged.
+- Kept v0.1.x read-only scope unchanged.
+
 ## v0.1.2
 
 - Added synthetic sample scan evidence under `examples/sample-scan/`.
