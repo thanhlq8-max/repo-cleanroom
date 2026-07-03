@@ -18,7 +18,9 @@ Scope:
 - repo-local artifact detection;
 - risk classification;
 - JSON/Markdown reports;
-- CI and GitHub contribution templates.
+- CI and GitHub contribution templates;
+- public sample scan evidence;
+- initial issue backlog.
 
 Forbidden in v0.1.x:
 
@@ -27,6 +29,17 @@ Forbidden in v0.1.x:
 - Docker prune;
 - shell history reading;
 - registry/service/PATH mutation.
+
+### v0.1.2 — sample evidence and backlog
+
+Goal: make the repo understandable to new visitors without requiring a local install first.
+
+Deliverables:
+
+- `examples/sample-scan/` synthetic scan output;
+- `docs/SAMPLE_SCAN_EVIDENCE.md` explanation;
+- initial GitHub issue backlog for v0.1.x and v0.2.0;
+- no scanner behavior change.
 
 ## v0.2.0 — cleanup plan engine
 
