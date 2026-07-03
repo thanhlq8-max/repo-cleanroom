@@ -74,6 +74,18 @@ Outputs:
 .cleanroom\public_safety_check.json
 ```
 
+## Sample scan evidence
+
+Synthetic sample output is available in [`examples/sample-scan/`](examples/sample-scan/).
+
+Start with:
+
+- [`docs/SAMPLE_SCAN_EVIDENCE.md`](docs/SAMPLE_SCAN_EVIDENCE.md)
+- [`examples/sample-scan/findings.md`](examples/sample-scan/findings.md)
+- [`examples/sample-scan/artifact_inventory.json`](examples/sample-scan/artifact_inventory.json)
+
+The sample demonstrates `SAFE`, `REVIEW`, and `BLOCKED` findings without deleting anything.
+
 ## Validate locally
 
 ```powershell
@@ -110,6 +122,7 @@ Every pull request should keep the safety contract intact:
 
 - `v0.1.0`: safe scanner + JSON/Markdown reports.
 - `v0.1.1`: GitHub CI, issue templates, package metadata cleanup.
+- `v0.1.2`: sample scan evidence + initial public backlog.
 - `v0.2.0`: cleanup plan engine, still no deletion.
 - `v0.3.0`: repo-local SAFE clean only, approval-gated.
 - `v0.4.0`: post-clean verification and attestation.
