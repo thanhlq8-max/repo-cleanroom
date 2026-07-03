@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.4
+
+- Expanded path guard coverage for Windows-focused temporary-directory scenarios.
+- Added sibling-directory and similar-prefix path tests.
+- Added root/self and resolved-child path tests.
+- Added POSIX-style relative path output test.
+- Added symlink-to-sibling coverage with platform skip.
+- Kept scan behavior unchanged.
+
 ## v0.1.3
 
 - Added a largest-artifacts section to `findings.md`.
