@@ -1,0 +1,60 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "repo-cleanroom"
+version = "0.1.0"
+description = "Safe scanner and report tool for local artifacts created by cloned open-source repositories."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+  { name = "Repo Cleanroom Maintainers" }
+]
+keywords = [
+  "git",
+  "cleanup",
+  "developer-tools",
+  "workspace",
+  "disk-usage",
+  "scanner",
+  "python",
+  "windows"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development",
+  "Topic :: System :: Archiving"
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "build>=1.2"
+]
+
+[project.urls]
+Homepage = "https://github.com/OWNER/REPO"
+Issues = "https://github.com/OWNER/REPO/issues"
+
+[project.scripts]
+repo-cleanroom = "repo_cleanroom.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/repo_cleanroom"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
