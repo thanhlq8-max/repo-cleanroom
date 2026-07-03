@@ -1,0 +1,73 @@
+{
+  "schema_version": "0.1.0",
+  "status": "OK",
+  "mode": "READ_ONLY_SCAN",
+  "generated_at_utc": "2026-07-03T08:30:00+00:00",
+  "root": "C:\\Users\\demo\\GitHub",
+  "repos": [
+    {
+      "name": "demo-python-tool",
+      "path": "C:\\Users\\demo\\GitHub\\demo-python-tool",
+      "relative_path": "demo-python-tool",
+      "git_dir": "C:\\Users\\demo\\GitHub\\demo-python-tool\\.git"
+    },
+    {
+      "name": "demo-node-app",
+      "path": "C:\\Users\\demo\\GitHub\\demo-node-app",
+      "relative_path": "demo-node-app",
+      "git_dir": "C:\\Users\\demo\\GitHub\\demo-node-app\\.git"
+    },
+    {
+      "name": "demo-rust-cli",
+      "path": "C:\\Users\\demo\\GitHub\\demo-rust-cli",
+      "relative_path": "demo-rust-cli",
+      "git_dir": "C:\\Users\\demo\\GitHub\\demo-rust-cli\\.git"
+    }
+  ],
+  "manifests": [
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-python-tool",
+      "path": "C:\\Users\\demo\\GitHub\\demo-python-tool\\pyproject.toml",
+      "relative_path": "pyproject.toml",
+      "ecosystem": "python",
+      "kind": "pyproject"
+    },
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-python-tool",
+      "path": "C:\\Users\\demo\\GitHub\\demo-python-tool\\requirements.txt",
+      "relative_path": "requirements.txt",
+      "ecosystem": "python",
+      "kind": "requirements"
+    },
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-node-app",
+      "path": "C:\\Users\\demo\\GitHub\\demo-node-app\\package.json",
+      "relative_path": "package.json",
+      "ecosystem": "node",
+      "kind": "package"
+    },
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-node-app",
+      "path": "C:\\Users\\demo\\GitHub\\demo-node-app\\package-lock.json",
+      "relative_path": "package-lock.json",
+      "ecosystem": "node",
+      "kind": "lockfile"
+    },
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-rust-cli",
+      "path": "C:\\Users\\demo\\GitHub\\demo-rust-cli\\Cargo.toml",
+      "relative_path": "Cargo.toml",
+      "ecosystem": "rust",
+      "kind": "cargo"
+    }
+  ],
+  "totals": {
+    "repos": 3,
+    "manifests": 5
+  },
+  "safety": {
+    "cleanup_performed": false,
+    "shell_history_read": false,
+    "target_repo_scripts_executed": false
+  }
+}
