@@ -45,8 +45,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/OWNER/REPO"
-Issues = "https://github.com/OWNER/REPO/issues"
+Homepage = "https://github.com/thanhlq8-max/repo-cleanroom"
+Issues = "https://github.com/thanhlq8-max/repo-cleanroom/issues"
+Source = "https://github.com/thanhlq8-max/repo-cleanroom"
 
 [project.scripts]
 repo-cleanroom = "repo_cleanroom.cli:main"

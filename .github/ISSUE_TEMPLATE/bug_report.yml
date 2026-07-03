@@ -1,0 +1,82 @@
+name: Bug report
+description: Report a reproducible Repo Cleanroom defect.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a defect. Do not paste secrets, tokens, `.env` contents, private keys, or full shell history.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What failed?
+      placeholder: The scan command failed when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Use a minimal workspace example whenever possible.
+      placeholder: |
+        1. Create a repo with ...
+        2. Run `repo-cleanroom scan --root ... --out-dir ...`
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Repo Cleanroom version
+      placeholder: 0.1.0
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: Python 3.13.x
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - Linux
+        - macOS
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: safe-output
+    attributes:
+      label: Sanitized output
+      description: Paste only sanitized logs. Remove private paths, usernames, tokens, and secrets.
+      render: text
+    validations:
+      required: false

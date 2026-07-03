@@ -1,5 +1,7 @@
 # Repo Cleanroom
 
+[![CI](https://github.com/thanhlq8-max/repo-cleanroom/actions/workflows/ci.yml/badge.svg)](https://github.com/thanhlq8-max/repo-cleanroom/actions/workflows/ci.yml)
+
 Repo Cleanroom is a safety-first CLI for developers who clone and run many open-source repositories locally.
 
 It scans a user-selected workspace, discovers Git repositories, detects common repo-local generated artifacts, classifies cleanup risk, and writes JSON/Markdown reports.
@@ -47,6 +49,8 @@ Repo Cleanroom is not:
 ## Install locally
 
 ```powershell
+git clone https://github.com/thanhlq8-max/repo-cleanroom.git
+cd repo-cleanroom
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 py -m pip install -e .[dev]
@@ -93,9 +97,19 @@ Risk classes:
 | `DANGEROUS` | Could affect external/system state or valuable runtime data. Not cleaned in MVP. |
 | `BLOCKED` | Sensitive/protected item. Must not be auto-deleted or printed as content. |
 
+## GitHub workflow
+
+Every pull request should keep the safety contract intact:
+
+- scan/report changes must remain read-only;
+- cleanup behavior must go through a plan and approval model first;
+- destructive behavior requires a dedicated safety review issue;
+- CI must pass on Python 3.11, 3.12, and 3.13.
+
 ## Roadmap
 
 - `v0.1.0`: safe scanner + JSON/Markdown reports.
+- `v0.1.1`: GitHub CI, issue templates, package metadata cleanup.
 - `v0.2.0`: cleanup plan engine, still no deletion.
 - `v0.3.0`: repo-local SAFE clean only, approval-gated.
 - `v0.4.0`: post-clean verification and attestation.

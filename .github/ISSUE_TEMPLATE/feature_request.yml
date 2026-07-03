@@ -1,0 +1,59 @@
+name: Feature request
+description: Propose a scoped Repo Cleanroom capability.
+title: "feature: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Repo Cleanroom is safety-first. Proposals that delete files, mutate Docker, uninstall packages, or touch system state must define scan, plan, approval, and verification behavior.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What developer cleanup/audit pain does this solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed behavior
+      description: Describe the smallest safe behavior change.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Workflow phase
+      options:
+        - Scan/report
+        - Evidence mapping
+        - Cleanup planning
+        - Approval gate
+        - Clean execution
+        - Verification/attestation
+        - Documentation
+        - CI/packaging
+    validations:
+      required: true
+
+  - type: textarea
+    id: safety
+    attributes:
+      label: Safety constraints
+      description: What must never be touched or changed?
+      placeholder: Do not read secret contents. Do not delete files. Do not follow symlinks outside root.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Concrete checks/tests/docs required for this feature.
+    validations:
+      required: true

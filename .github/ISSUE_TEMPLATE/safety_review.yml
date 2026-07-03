@@ -1,0 +1,64 @@
+name: Safety review
+description: Request review for destructive or sensitive behavior before implementation.
+title: "safety: "
+labels:
+  - safety
+  - needs-review
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this before implementing behavior that could delete, mutate, uninstall, prune, or inspect sensitive local data.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Filesystem deletion
+        - Docker objects
+        - Global package manager
+        - Shell history evidence
+        - Secret/path protection
+        - Symlink/path boundary
+        - Windows-specific behavior
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed operation
+      description: What exact operation is being considered?
+    validations:
+      required: true
+
+  - type: textarea
+    id: possible-harm
+    attributes:
+      label: Possible harm
+      description: What could go wrong if the logic is wrong?
+    validations:
+      required: true
+
+  - type: textarea
+    id: required-gates
+    attributes:
+      label: Required gates
+      description: List scan, plan, approval, and verification requirements.
+      placeholder: |
+        - Dry-run evidence must exist.
+        - User must approve exact paths.
+        - Path guard must prove item is inside root.
+        - Verify report must confirm final state.
+    validations:
+      required: true
+
+  - type: textarea
+    id: tests
+    attributes:
+      label: Required tests
+      description: What test cases must exist before this can merge?
+    validations:
+      required: true
