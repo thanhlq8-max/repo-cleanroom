@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1.0",
+  "status": "PASS",
+  "generated_at_utc": "2026-07-03T08:30:00+00:00",
+  "secrets_exposed": false,
+  "unsafe_claims": false,
+  "misleading_wording": false,
+  "external_side_effect": false,
+  "cleanup_performed": false,
+  "notes": [
+    "v0.1.0 scan is read-only.",
+    "Secret guard uses path/name classification only and does not read file contents.",
+    "Target repository scripts are not executed."
+  ]
+}

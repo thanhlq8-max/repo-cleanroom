@@ -1,0 +1,125 @@
+{
+  "schema_version": "0.1.0",
+  "status": "OK",
+  "mode": "READ_ONLY_SCAN",
+  "generated_at_utc": "2026-07-03T08:30:00+00:00",
+  "root": "C:\\Users\\demo\\GitHub",
+  "artifacts": [
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-python-tool",
+      "path": "C:\\Users\\demo\\GitHub\\demo-python-tool\\.venv",
+      "relative_path": ".venv",
+      "artifact_type": "python_virtualenv",
+      "risk": "SAFE",
+      "reason": "common repo-local generated artifact",
+      "size_bytes": 31457280,
+      "file_count": 2250,
+      "is_symlink": false,
+      "scan_errors": [],
+      "repo_name": "demo-python-tool",
+      "repo_relative_path": "demo-python-tool"
+    },
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-python-tool",
+      "path": "C:\\Users\\demo\\GitHub\\demo-python-tool\\.pytest_cache",
+      "relative_path": ".pytest_cache",
+      "artifact_type": "python_cache",
+      "risk": "SAFE",
+      "reason": "common repo-local generated artifact",
+      "size_bytes": 2048,
+      "file_count": 5,
+      "is_symlink": false,
+      "scan_errors": [],
+      "repo_name": "demo-python-tool",
+      "repo_relative_path": "demo-python-tool"
+    },
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-python-tool",
+      "path": "C:\\Users\\demo\\GitHub\\demo-python-tool\\.env",
+      "relative_path": ".env",
+      "artifact_type": "protected_config",
+      "risk": "BLOCKED",
+      "reason": "protected sensitive path/name pattern",
+      "size_bytes": 42,
+      "file_count": 1,
+      "is_symlink": false,
+      "scan_errors": [],
+      "repo_name": "demo-python-tool",
+      "repo_relative_path": "demo-python-tool"
+    },
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-node-app",
+      "path": "C:\\Users\\demo\\GitHub\\demo-node-app\\node_modules",
+      "relative_path": "node_modules",
+      "artifact_type": "node_dependencies",
+      "risk": "SAFE",
+      "reason": "common repo-local generated artifact",
+      "size_bytes": 157286400,
+      "file_count": 12000,
+      "is_symlink": false,
+      "scan_errors": [],
+      "repo_name": "demo-node-app",
+      "repo_relative_path": "demo-node-app"
+    },
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-node-app",
+      "path": "C:\\Users\\demo\\GitHub\\demo-node-app\\dist",
+      "relative_path": "dist",
+      "artifact_type": "build_output",
+      "risk": "SAFE",
+      "reason": "common repo-local generated artifact",
+      "size_bytes": 7340032,
+      "file_count": 96,
+      "is_symlink": false,
+      "scan_errors": [],
+      "repo_name": "demo-node-app",
+      "repo_relative_path": "demo-node-app"
+    },
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-node-app",
+      "path": "C:\\Users\\demo\\GitHub\\demo-node-app\\logs",
+      "relative_path": "logs",
+      "artifact_type": "runtime_logs",
+      "risk": "REVIEW",
+      "reason": "may contain user/runtime data; requires review",
+      "size_bytes": 524288,
+      "file_count": 12,
+      "is_symlink": false,
+      "scan_errors": [],
+      "repo_name": "demo-node-app",
+      "repo_relative_path": "demo-node-app"
+    },
+    {
+      "repo_path": "C:\\Users\\demo\\GitHub\\demo-rust-cli",
+      "path": "C:\\Users\\demo\\GitHub\\demo-rust-cli\\target",
+      "relative_path": "target",
+      "artifact_type": "rust_build_output",
+      "risk": "SAFE",
+      "reason": "common repo-local generated artifact",
+      "size_bytes": 50331648,
+      "file_count": 1810,
+      "is_symlink": false,
+      "scan_errors": [],
+      "repo_name": "demo-rust-cli",
+      "repo_relative_path": "demo-rust-cli"
+    }
+  ],
+  "totals": {
+    "artifacts": 7,
+    "size_bytes": 246943738,
+    "by_risk": {
+      "BLOCKED": 1,
+      "REVIEW": 1,
+      "SAFE": 5
+    },
+    "by_type": {
+      "build_output": 1,
+      "node_dependencies": 1,
+      "protected_config": 1,
+      "python_cache": 1,
+      "python_virtualenv": 1,
+      "rust_build_output": 1,
+      "runtime_logs": 1
+    }
+  }
+}
