@@ -14,6 +14,9 @@ py -m pip install -e .[dev]
 repo-cleanroom scan --root F:\GitHub --out-dir .cleanroom
 ```
 
+For a sanitized successful Windows run, see
+[`docs/WINDOWS_QUICKSTART_TRANSCRIPT.md`](WINDOWS_QUICKSTART_TRANSCRIPT.md).
+
 ## Read outputs
 
 ```powershell

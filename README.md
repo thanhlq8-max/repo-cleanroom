@@ -86,6 +86,9 @@ Start with:
 
 The sample demonstrates `SAFE`, `REVIEW`, and `BLOCKED` findings without deleting anything.
 
+For a sanitized Windows quickstart transcript, see
+[`docs/WINDOWS_QUICKSTART_TRANSCRIPT.md`](docs/WINDOWS_QUICKSTART_TRANSCRIPT.md).
+
 ## Validate locally
 
 ```powershell
