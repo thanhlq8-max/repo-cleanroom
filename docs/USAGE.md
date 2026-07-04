@@ -1,5 +1,7 @@
 # Usage
 
+A sanitized Windows transcript of the full flow below is available in [`WINDOWS_QUICKSTART.md`](WINDOWS_QUICKSTART.md).
+
 ## Install
 
 ```powershell
