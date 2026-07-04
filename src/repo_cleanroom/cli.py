@@ -9,8 +9,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from repo_cleanroom.cleaner.approval import ApprovalError, build_approval_token, verify_approval_token
+from repo_cleanroom.cleaner.executor import execute_clean
 from repo_cleanroom.models import SCHEMA_VERSION
 from repo_cleanroom.planners.plan_builder import PlanBuildError, build_plan_payload
+from repo_cleanroom.planners.plan_hash import PlanHashError, compute_plan_hash, load_plan_file
 from repo_cleanroom.planners.plan_markdown import write_plan_markdown
 from repo_cleanroom.reports.json_report import write_json
 from repo_cleanroom.reports.markdown_report import write_findings_markdown
@@ -177,6 +180,97 @@ def run_plan(args: argparse.Namespace) -> int:
         return 1
 
 
+def run_approve(args: argparse.Namespace) -> int:
+    """Run the approve command: issue a token bound to one exact plan."""
+
+    try:
+        plan = load_plan_file(args.plan)
+        token = build_approval_token(plan, approved_by=args.approved_by)
+
+        out_dir = Path(args.out_dir).expanduser()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        token_path = out_dir / "approval_token.json"
+        write_json(token_path, token)
+
+        print("STATUS: APPROVAL_TOKEN_WRITTEN")
+        print(f"PLAN_ID: {token['plan_id']}")
+        print(f"PLAN_HASH: {token['plan_hash']}")
+        print(f"APPROVED_REMOVE_COUNT: {token['approved_remove_count']}")
+        print(f"APPROVED_REMOVE_BYTES: {token['approved_remove_bytes']}")
+        print(f"EXPIRES_AT_UTC: {token['expires_at_utc']}")
+        print(f"TOKEN: {token_path}")
+        print("NOTE: approval binds to this exact plan; any plan change invalidates it.")
+        return 0
+    except (PlanHashError, ApprovalError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
+        return 1
+
+
+def run_clean(args: argparse.Namespace) -> int:
+    """Run the clean command: guarded execution of one approved plan."""
+
+    try:
+        resolved_root = resolve_existing_directory(args.root)
+        plan = load_plan_file(args.plan)
+        token = load_plan_file(args.token)
+
+        verify_approval_token(token, plan, resolved_root)
+
+        actual_hash = compute_plan_hash(plan)
+        if args.yes_exact_plan.strip().lower() != actual_hash:
+            raise ApprovalError(
+                "--yes-exact-plan does not match the plan hash; "
+                "pass the full PLAN_HASH printed by the approve command"
+            )
+
+        result = execute_clean(plan, resolved_root, dry_run=args.dry_run)
+
+        out_dir = Path(args.out_dir).expanduser()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        write_json(out_dir / "clean_action_log.json", result)
+        if not args.dry_run:
+            write_json(
+                out_dir / "removed_manifest.json",
+                {
+                    "log_schema_version": result["log_schema_version"],
+                    "generated_at_utc": result["generated_at_utc"],
+                    "root": result["root"],
+                    "plan_id": result["plan_id"],
+                    "removed_paths": result["removed_paths"],
+                    "removed_bytes": result["summary"]["removed_bytes"],
+                },
+            )
+
+        summary = result["summary"]
+        if args.dry_run:
+            print("STATUS: CLEAN_DRY_RUN_COMPLETE")
+        elif result["failed"]:
+            print("STATUS: CLEAN_ABORTED")
+        else:
+            print("STATUS: CLEAN_COMPLETE")
+        print(f"ROOT: {result['root']}")
+        print(f"OUT_DIR: {out_dir}")
+        print(f"REMOVED: {summary['removed']}")
+        print(f"WOULD_REMOVE: {summary['would_remove']}")
+        print(
+            "SKIPPED: "
+            f"{summary['skipped_changed'] + summary['skipped_protected'] + summary['skipped_guard_fail']}"
+        )
+        print(f"ERRORS: {summary['errors']}")
+        print(f"REMOVED_BYTES: {summary['removed_bytes']}")
+        print(f"CLEANUP_PERFORMED: {'NO' if args.dry_run else 'YES'}")
+        return 1 if result["failed"] else 0
+    except (PathGuardError, PlanHashError, ApprovalError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser."""
 
@@ -213,6 +307,47 @@ def build_parser() -> argparse.ArgumentParser:
         help="directory where cleanup_plan.json and cleanup_plan.md will be written; required by policy",
     )
     plan.set_defaults(func=run_plan)
+
+    approve = subparsers.add_parser(
+        "approve",
+        help="issue an approval token bound to one exact cleanup plan",
+    )
+    approve.add_argument("--plan", required=True, help="path to cleanup_plan.json to approve")
+    approve.add_argument(
+        "--approved-by",
+        required=True,
+        help="operator identity recorded in the token",
+    )
+    approve.add_argument(
+        "--out-dir",
+        required=True,
+        help="directory where approval_token.json will be written; required by policy",
+    )
+    approve.set_defaults(func=run_approve)
+
+    clean = subparsers.add_parser(
+        "clean",
+        help="remove SAFE plan entries under one exact approved plan; all guards re-checked",
+    )
+    clean.add_argument("--root", required=True, help="root directory the plan was approved for")
+    clean.add_argument("--plan", required=True, help="path to the approved cleanup_plan.json")
+    clean.add_argument("--token", required=True, help="path to approval_token.json")
+    clean.add_argument(
+        "--yes-exact-plan",
+        required=True,
+        help="full plan hash from the approve command; blanket confirmation is not accepted",
+    )
+    clean.add_argument(
+        "--out-dir",
+        required=True,
+        help="directory where clean_action_log.json (and removed_manifest.json) are written",
+    )
+    clean.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="report what would be removed without removing anything",
+    )
+    clean.set_defaults(func=run_clean)
 
     return parser
 

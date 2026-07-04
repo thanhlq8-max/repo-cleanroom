@@ -78,6 +78,31 @@ Outputs:
 
 A sanitized Windows terminal transcript of a full install-and-scan session is available in [`docs/WINDOWS_QUICKSTART.md`](docs/WINDOWS_QUICKSTART.md).
 
+## Build a cleanup plan (removes nothing)
+
+The `plan` command turns a scan's `artifact_inventory.json` into a reviewable proposal. It is PLAN_ONLY: it writes `cleanup_plan.json` and `cleanup_plan.md` and removes nothing. A plan is not permission.
+
+```powershell
+repo-cleanroom plan --scan-artifacts .cleanroom\artifact_inventory.json --out-dir .cleanroom
+```
+
+Schema: [`docs/CLEANUP_PLAN_SCHEMA.md`](docs/CLEANUP_PLAN_SCHEMA.md). Sample output: [`examples/sample-plan/`](examples/sample-plan/).
+
+## Approve and clean (v0.3.x, approval-gated)
+
+Removal exists only behind an exact-plan approval token ([`docs/APPROVAL_TOKEN.md`](docs/APPROVAL_TOKEN.md)) and the safety model in [`docs/CLEANER_SAFETY_MODEL.md`](docs/CLEANER_SAFETY_MODEL.md). Review `cleanup_plan.md`, then:
+
+```powershell
+repo-cleanroom approve --plan .cleanroom\cleanup_plan.json --approved-by "your-name" --out-dir .cleanroom
+repo-cleanroom clean --root F:\GitHub --plan .cleanroom\cleanup_plan.json --token .cleanroom\approval_token.json --yes-exact-plan <PLAN_HASH> --dry-run --out-dir .cleanroom
+repo-cleanroom clean --root F:\GitHub --plan .cleanroom\cleanup_plan.json --token .cleanroom\approval_token.json --yes-exact-plan <PLAN_HASH> --out-dir .cleanroom
+```
+
+- Only `SAFE` entries proposed by the exact approved plan are removed; `REVIEW`, `DANGEROUS`, and `BLOCKED` items are never touched.
+- Any change to the plan invalidates the approval. Tokens expire after 24 hours.
+- Every guard (root boundary, symlink, secret, `.git`) is re-checked at delete time.
+- There is no rollback. Always run `--dry-run` first.
+
 ## Sample scan evidence
 
 Synthetic sample output is available in [`examples/sample-scan/`](examples/sample-scan/).
@@ -105,7 +130,7 @@ py -m build
 
 Repo Cleanroom treats target repository files as untrusted data. It does not execute scripts from scanned repositories.
 
-v0.1.x has no cleanup/delete command. Detection does not mean removal approval.
+Detection does not mean removal approval. `scan` and `plan` never modify the workspace. Removal exists only in the approval-gated `clean` command (v0.3.x), which acts solely on SAFE entries of one byte-exact approved plan and re-checks every guard at delete time.
 
 Risk classes:
 

@@ -1,60 +1,14 @@
 # Changelog
-## v0.1.5
 
-- Added `docs/WINDOWS_QUICKSTART.md` with a sanitized Windows install-and-scan transcript.
-- Linked the quickstart from README and `docs/USAGE.md`.
-- Documentation only; no scanner behavior change.
-- No cleanup/delete command added.
+## v0.3.0
 
-## v0.1.7
-
-- Grouped the `findings.md` artifact findings section by risk class (`SAFE` → `REVIEW` → `DANGEROUS` → `BLOCKED`) with per-group count and size subtotal.
-- Sorted findings inside each risk group by size, largest first.
-- Added tests for group ordering, subtotals, and omission of empty groups.
-- Report rendering change only; no scan/filesystem side effect change.
-
-## v0.1.6
-
-- Added `docs/RELEASE_POLICY.md`: milestone-vs-package version tracks, alignment rule, release gates, and pre-release checklist.
-- Recorded that `pyproject.toml` stays at `0.1.0` until an explicit release task.
-- Documentation only; no scanner behavior change.
-- No package published.
-
-## v0.1.5
-
-- Added `docs/WINDOWS_QUICKSTART.md` with a sanitized Windows install-and-scan transcript.
-- Linked the quickstart from README and `docs/USAGE.md`.
-- Documentation only; no scanner behavior change.
-- No cleanup/delete command added.
-
-## v0.2.1
-
-- Added the `plan` command: builds `cleanup_plan.json` and `cleanup_plan.md` from an existing `artifact_inventory.json`, per `docs/CLEANUP_PLAN_SCHEMA.md`.
-- Plan generation is PLAN_ONLY: it proposes, it never removes; tests assert the scanned workspace is byte-identical before and after planning.
-- Fixed risk-to-action mapping: SAFE→PROPOSE_REMOVE, REVIEW→REVIEW_REQUIRED, DANGEROUS→NO_ACTION, BLOCKED→FORBIDDEN; SAFE symlinks are never proposed.
-- Plan aborts with no partial output if any inventory entry fails the root path guard or has an unknown risk class.
-- `--scan-artifacts` and `--out-dir` are required; no hidden defaults.
-
-## v0.1.7
-
-- Grouped the `findings.md` artifact findings section by risk class (`SAFE` → `REVIEW` → `DANGEROUS` → `BLOCKED`) with per-group count and size subtotal.
-- Sorted findings inside each risk group by size, largest first.
-- Added tests for group ordering, subtotals, and omission of empty groups.
-- Report rendering change only; no scan/filesystem side effect change.
-
-## v0.1.6
-
-- Added `docs/RELEASE_POLICY.md`: milestone-vs-package version tracks, alignment rule, release gates, and pre-release checklist.
-- Recorded that `pyproject.toml` stays at `0.1.0` until an explicit release task.
-- Documentation only; no scanner behavior change.
-- No package published.
-
-## v0.1.5
-
-- Added `docs/WINDOWS_QUICKSTART.md` with a sanitized Windows install-and-scan transcript.
-- Linked the quickstart from README and `docs/USAGE.md`.
-- Documentation only; no scanner behavior change.
-- No cleanup/delete command added.
+- Added the `approve` command: issues `approval_token.json` bound to one exact plan via the canonical SHA-256 plan hash (docs/APPROVAL_TOKEN.md); 24-hour expiry; `--approved-by` required.
+- Added the `clean` command: removes ONLY SAFE `PROPOSE_REMOVE` entries of one approved plan; requires `--root`, `--plan`, `--token`, `--out-dir`, and `--yes-exact-plan <full plan hash>` — no blanket confirmation.
+- Every guard re-checked at delete time: root path guard, symlink identity, secret guard on the entry and on names planted inside it, `.git` refusal, filesystem-boundary refusal; symlinks are removed as links only, targets never touched.
+- `--dry-run` reports the exact would-remove set and removes nothing.
+- Outputs `clean_action_log.json` (one record per plan entry, every run) and `removed_manifest.json` (real runs only); fail-fast on first error with remaining entries marked NOT_PROCESSED.
+- Tampered plan, expired token, mismatched root, or wrong confirmation hash → refusal with zero removals (tested).
+- Repaired changelog entries duplicated by manual merge resolution; restored the README/USAGE plan sections lost in the same merges.
 
 ## v0.2.2
 
