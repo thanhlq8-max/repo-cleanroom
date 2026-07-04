@@ -76,6 +76,8 @@ Outputs:
 .cleanroom\public_safety_check.json
 ```
 
+A sanitized Windows terminal transcript of a full install-and-scan session is available in [`docs/WINDOWS_QUICKSTART.md`](docs/WINDOWS_QUICKSTART.md).
+
 ## Sample scan evidence
 
 Synthetic sample output is available in [`examples/sample-scan/`](examples/sample-scan/).

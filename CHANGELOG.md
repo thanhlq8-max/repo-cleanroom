@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.5
+
+- Added `docs/WINDOWS_QUICKSTART.md` with a sanitized Windows install-and-scan transcript.
+- Linked the quickstart from README and `docs/USAGE.md`.
+- Documentation only; no scanner behavior change.
+- No cleanup/delete command added.
+
 ## v0.1.4
 
 - Expanded path guard coverage for Windows-focused temporary-directory scenarios.
