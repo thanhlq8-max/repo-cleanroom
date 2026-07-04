@@ -1,4 +1,31 @@
 # Changelog
+## v0.1.5
+
+- Added `docs/WINDOWS_QUICKSTART.md` with a sanitized Windows install-and-scan transcript.
+- Linked the quickstart from README and `docs/USAGE.md`.
+- Documentation only; no scanner behavior change.
+- No cleanup/delete command added.
+
+## v0.1.7
+
+- Grouped the `findings.md` artifact findings section by risk class (`SAFE` → `REVIEW` → `DANGEROUS` → `BLOCKED`) with per-group count and size subtotal.
+- Sorted findings inside each risk group by size, largest first.
+- Added tests for group ordering, subtotals, and omission of empty groups.
+- Report rendering change only; no scan/filesystem side effect change.
+
+## v0.1.6
+
+- Added `docs/RELEASE_POLICY.md`: milestone-vs-package version tracks, alignment rule, release gates, and pre-release checklist.
+- Recorded that `pyproject.toml` stays at `0.1.0` until an explicit release task.
+- Documentation only; no scanner behavior change.
+- No package published.
+
+## v0.1.5
+
+- Added `docs/WINDOWS_QUICKSTART.md` with a sanitized Windows install-and-scan transcript.
+- Linked the quickstart from README and `docs/USAGE.md`.
+- Documentation only; no scanner behavior change.
+- No cleanup/delete command added.
 
 ## v0.2.1
 
