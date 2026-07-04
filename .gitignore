@@ -11,3 +11,8 @@ dist/
 .cleanroom/
 coverage/
 .coverage
+
+# Local operator/agent state — must not be committed
+CLAUDE.md
+.claude/
+PROJECT_STATE*
