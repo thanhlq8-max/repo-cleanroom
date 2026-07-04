@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.2
+
+- Added JSON contract tests pinning the `cleanup_plan.json` schema (top-level, entry, summary, provenance field sets and count/byte consistency).
+- Added `cleanup_plan.md` rendering tests: fixed action-group order, size sorting, empty-group omission, and explicit nothing-was-deleted wording.
+- Added `examples/sample-plan/cleanup_plan.md`, generated from the committed synthetic sample plan with the real renderer.
+- Tests only plus sample evidence; no behavior change; still no removal capability.
+
 ## v0.2.1
 
 - Added the `plan` command: builds `cleanup_plan.json` and `cleanup_plan.md` from an existing `artifact_inventory.json`, per `docs/CLEANUP_PLAN_SCHEMA.md`.
