@@ -9,6 +9,8 @@ from typing import Any
 
 MAX_LARGEST_ARTIFACTS = 10
 
+RISK_ORDER = ["SAFE", "REVIEW", "DANGEROUS", "BLOCKED"]
+
 
 def _format_bytes(value: int) -> str:
     units = ["B", "KB", "MB", "GB", "TB"]
@@ -94,19 +96,29 @@ def render_findings_markdown(inventory: dict[str, Any], artifact_inventory: dict
                 f"| `{repo.get('name')}` | `{repo.get('relative_path')}` | {manifest_counts.get(repo.get('path'), 0)} |"
             )
     lines.append("")
-    lines.append("## Artifact findings")
+    lines.append("## Artifact findings by risk")
     lines.append("")
     if not artifacts:
         lines.append("No known repo-local artifacts were detected.")
+        lines.append("")
     else:
-        lines.append("| Risk | Type | Size | Repo-local path | Reason |")
-        lines.append("|---|---|---:|---|---|")
-        for item in artifacts:
-            lines.append(
-                f"| {item.get('risk')} | `{item.get('artifact_type')}` | {_format_bytes(_artifact_size(item))} | "
-                f"`{_artifact_display_path(item)}` | {item.get('reason')} |"
-            )
-    lines.append("")
+        known_risks = set(RISK_ORDER)
+        other_risks = sorted({item.get("risk", "UNKNOWN") for item in artifacts} - known_risks)
+        for risk in RISK_ORDER + other_risks:
+            group = [item for item in artifacts if item.get("risk", "UNKNOWN") == risk]
+            if not group:
+                continue
+            group_size = sum(_artifact_size(item) for item in group)
+            lines.append(f"### {risk} ({len(group)} finding(s), {_format_bytes(group_size)})")
+            lines.append("")
+            lines.append("| Type | Size | Repo-local path | Reason |")
+            lines.append("|---|---:|---|---|")
+            for item in sorted(group, key=_artifact_size, reverse=True):
+                lines.append(
+                    f"| `{item.get('artifact_type')}` | {_format_bytes(_artifact_size(item))} | "
+                    f"`{_artifact_display_path(item)}` | {item.get('reason')} |"
+                )
+            lines.append("")
     lines.append("## Safety notes")
     lines.append("")
     lines.append("- v0.1.0 is read-only and does not remove files.")
