@@ -16,12 +16,6 @@ py -m pip install -e .[dev]
 repo-cleanroom scan --root F:\GitHub --out-dir .cleanroom
 ```
 
-## Plan (PLAN_ONLY — removes nothing)
-
-```powershell
-repo-cleanroom plan --scan-artifacts .cleanroom\artifact_inventory.json --out-dir .cleanroom
-```
-
 ## Read outputs
 
 ```powershell
