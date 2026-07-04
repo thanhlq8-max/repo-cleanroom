@@ -1,5 +1,7 @@
 # Usage
 
+A sanitized Windows transcript of the full flow below is available in [`WINDOWS_QUICKSTART.md`](WINDOWS_QUICKSTART.md).
+
 ## Install
 
 ```powershell
@@ -13,9 +15,6 @@ py -m pip install -e .[dev]
 ```powershell
 repo-cleanroom scan --root F:\GitHub --out-dir .cleanroom
 ```
-
-For a sanitized successful Windows run, see
-[`docs/WINDOWS_QUICKSTART_TRANSCRIPT.md`](WINDOWS_QUICKSTART_TRANSCRIPT.md).
 
 ## Read outputs
 

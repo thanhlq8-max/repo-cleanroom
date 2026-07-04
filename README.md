@@ -24,7 +24,7 @@ Later versions will add:
 SCAN -> EVIDENCE MAP -> USER-APPROVED PLAN -> CLEAN -> VERIFY -> ATTESTATION REPORT
 ```
 
-## v0.1.0 capabilities
+## v0.1.x capabilities
 
 - Discover Git repositories under a selected root.
 - Detect project manifests and infer ecosystems.
@@ -32,7 +32,9 @@ SCAN -> EVIDENCE MAP -> USER-APPROVED PLAN -> CLEAN -> VERIFY -> ATTESTATION REP
 - Classify artifacts into `SAFE`, `REVIEW`, `DANGEROUS`, or `BLOCKED`.
 - Block sensitive path patterns such as `.env`, private keys, credentials, wallet-like files, and token-like files.
 - Estimate artifact size without following symlinks.
-- Generate report artifacts.
+- Generate JSON and Markdown report artifacts.
+- Show the largest detected artifacts first in `findings.md`.
+- Validate core JSON report schema through tests.
 
 ## Non-goals
 
@@ -74,6 +76,8 @@ Outputs:
 .cleanroom\public_safety_check.json
 ```
 
+A sanitized Windows terminal transcript of a full install-and-scan session is available in [`docs/WINDOWS_QUICKSTART.md`](docs/WINDOWS_QUICKSTART.md).
+
 ## Sample scan evidence
 
 Synthetic sample output is available in [`examples/sample-scan/`](examples/sample-scan/).
@@ -101,13 +105,13 @@ py -m build
 
 Repo Cleanroom treats target repository files as untrusted data. It does not execute scripts from scanned repositories.
 
-v0.1.0 has no cleanup/delete command. Detection does not mean removal approval.
+v0.1.x has no cleanup/delete command. Detection does not mean removal approval.
 
 Risk classes:
 
 | Risk | Meaning |
 |---|---|
-| `SAFE` | Common generated artifact that can be proposed for deletion in a future plan engine. Not deleted in v0.1.0. |
+| `SAFE` | Common generated artifact that can be proposed for deletion in a future plan engine. Not deleted in v0.1.x. |
 | `REVIEW` | May contain user data or runtime output. User review required. |
 | `DANGEROUS` | Could affect external/system state or valuable runtime data. Not cleaned in MVP. |
 | `BLOCKED` | Sensitive/protected item. Must not be auto-deleted or printed as content. |
@@ -126,6 +130,7 @@ Every pull request should keep the safety contract intact:
 - `v0.1.0`: safe scanner + JSON/Markdown reports.
 - `v0.1.1`: GitHub CI, issue templates, package metadata cleanup.
 - `v0.1.2`: sample scan evidence + initial public backlog.
+- `v0.1.3`: largest-artifact report summary + JSON schema validation tests.
 - `v0.2.0`: cleanup plan engine, still no deletion.
 - `v0.3.0`: repo-local SAFE clean only, approval-gated.
 - `v0.4.0`: post-clean verification and attestation.
