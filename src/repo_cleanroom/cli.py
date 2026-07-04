@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import Any
 
 from repo_cleanroom.models import SCHEMA_VERSION
+from repo_cleanroom.planners.plan_builder import PlanBuildError, build_plan_payload
+from repo_cleanroom.planners.plan_markdown import write_plan_markdown
 from repo_cleanroom.reports.json_report import write_json
 from repo_cleanroom.reports.markdown_report import write_findings_markdown
 from repo_cleanroom.safety.path_guard import PathGuardError, resolve_existing_directory
@@ -146,6 +148,35 @@ def run_scan(args: argparse.Namespace) -> int:
         return 1
 
 
+def run_plan(args: argparse.Namespace) -> int:
+    """Run the plan command. PLAN_ONLY: writes proposal files, removes nothing."""
+
+    try:
+        plan = build_plan_payload(args.scan_artifacts)
+
+        out_dir = Path(args.out_dir).expanduser()
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+        write_json(out_dir / "cleanup_plan.json", plan)
+        write_plan_markdown(out_dir / "cleanup_plan.md", plan)
+
+        summary = plan["summary"]
+        print("STATUS: PLAN_ONLY_COMPLETE")
+        print(f"ROOT: {plan['root']}")
+        print(f"OUT_DIR: {out_dir}")
+        print(f"PLAN_ENTRIES: {summary['total_entries']}")
+        print(f"PROPOSED_REMOVE_COUNT: {summary['proposed_remove_count']}")
+        print(f"PROPOSED_REMOVE_BYTES: {summary['proposed_remove_bytes']}")
+        print("CLEANUP_PERFORMED: NO")
+        return 0
+    except (PathGuardError, PlanBuildError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser."""
 
@@ -166,6 +197,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="directory where scan reports will be written; required by policy",
     )
     scan.set_defaults(func=run_scan)
+
+    plan = subparsers.add_parser(
+        "plan",
+        help="build a PLAN_ONLY cleanup proposal from an existing artifact inventory; removes nothing",
+    )
+    plan.add_argument(
+        "--scan-artifacts",
+        required=True,
+        help="path to an artifact_inventory.json produced by the scan command",
+    )
+    plan.add_argument(
+        "--out-dir",
+        required=True,
+        help="directory where cleanup_plan.json and cleanup_plan.md will be written; required by policy",
+    )
+    plan.set_defaults(func=run_plan)
 
     return parser
 

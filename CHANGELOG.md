@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.1
+
+- Added the `plan` command: builds `cleanup_plan.json` and `cleanup_plan.md` from an existing `artifact_inventory.json`, per `docs/CLEANUP_PLAN_SCHEMA.md`.
+- Plan generation is PLAN_ONLY: it proposes, it never removes; tests assert the scanned workspace is byte-identical before and after planning.
+- Fixed risk-to-action mapping: SAFE→PROPOSE_REMOVE, REVIEW→REVIEW_REQUIRED, DANGEROUS→NO_ACTION, BLOCKED→FORBIDDEN; SAFE symlinks are never proposed.
+- Plan aborts with no partial output if any inventory entry fails the root path guard or has an unknown risk class.
+- `--scan-artifacts` and `--out-dir` are required; no hidden defaults.
+
 ## v0.1.7
 
 - Grouped the `findings.md` artifact findings section by risk class (`SAFE` → `REVIEW` → `DANGEROUS` → `BLOCKED`) with per-group count and size subtotal.

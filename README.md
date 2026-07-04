@@ -78,6 +78,16 @@ Outputs:
 
 A sanitized Windows terminal transcript of a full install-and-scan session is available in [`docs/WINDOWS_QUICKSTART.md`](docs/WINDOWS_QUICKSTART.md).
 
+## Build a cleanup plan (still deletes nothing)
+
+The `plan` command turns a scan's `artifact_inventory.json` into a reviewable proposal. It is PLAN_ONLY: it writes `cleanup_plan.json` and `cleanup_plan.md` and removes nothing. A plan is not permission; any future removal requires the approval-token flow designed in [`docs/APPROVAL_TOKEN.md`](docs/APPROVAL_TOKEN.md).
+
+```powershell
+repo-cleanroom plan --scan-artifacts .cleanroom\artifact_inventory.json --out-dir .cleanroom
+```
+
+Schema: [`docs/CLEANUP_PLAN_SCHEMA.md`](docs/CLEANUP_PLAN_SCHEMA.md). Sample output: [`examples/sample-plan/`](examples/sample-plan/).
+
 ## Sample scan evidence
 
 Synthetic sample output is available in [`examples/sample-scan/`](examples/sample-scan/).
