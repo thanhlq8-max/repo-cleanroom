@@ -1,0 +1,126 @@
+{
+  "plan_id": "6f1c2b9a-3d47-4e21-9c58-0a8f4d5e7b10",
+  "plan_schema_version": "0.2.0",
+  "generated_at_utc": "2026-07-04T09:00:00+00:00",
+  "mode": "PLAN_ONLY",
+  "root": "C:\\Users\\demo\\GitHub",
+  "source_artifact_inventory": {
+    "path": "C:\\Users\\demo\\GitHub\\.cleanroom\\artifact_inventory.json",
+    "schema_version": "0.1.0",
+    "sha256": "9dce70d9939c2de07933a111b4b09f2cdd6b7bcdbc1b632e9b8fda967fc4d104"
+  },
+  "entries": [
+    {
+      "entry_id": "demo-python-tool/.venv",
+      "repo_name": "demo-python-tool",
+      "repo_relative_path": "demo-python-tool",
+      "relative_path": ".venv",
+      "path": "C:\\Users\\demo\\GitHub\\demo-python-tool\\.venv",
+      "artifact_type": "python_virtualenv",
+      "risk": "SAFE",
+      "size_bytes": 31457280,
+      "file_count": 2250,
+      "is_symlink": false,
+      "proposed_action": "PROPOSE_REMOVE",
+      "reason": "SAFE repo-local generated artifact; candidate for future approved clean"
+    },
+    {
+      "entry_id": "demo-python-tool/.pytest_cache",
+      "repo_name": "demo-python-tool",
+      "repo_relative_path": "demo-python-tool",
+      "relative_path": ".pytest_cache",
+      "path": "C:\\Users\\demo\\GitHub\\demo-python-tool\\.pytest_cache",
+      "artifact_type": "python_cache",
+      "risk": "SAFE",
+      "size_bytes": 2048,
+      "file_count": 5,
+      "is_symlink": false,
+      "proposed_action": "PROPOSE_REMOVE",
+      "reason": "SAFE repo-local generated artifact; candidate for future approved clean"
+    },
+    {
+      "entry_id": "demo-python-tool/.env",
+      "repo_name": "demo-python-tool",
+      "repo_relative_path": "demo-python-tool",
+      "relative_path": ".env",
+      "path": "C:\\Users\\demo\\GitHub\\demo-python-tool\\.env",
+      "artifact_type": "protected_config",
+      "risk": "BLOCKED",
+      "size_bytes": 42,
+      "file_count": 1,
+      "is_symlink": false,
+      "proposed_action": "FORBIDDEN",
+      "reason": "protected sensitive path/name pattern; must never be removed or printed"
+    },
+    {
+      "entry_id": "demo-node-app/node_modules",
+      "repo_name": "demo-node-app",
+      "repo_relative_path": "demo-node-app",
+      "relative_path": "node_modules",
+      "path": "C:\\Users\\demo\\GitHub\\demo-node-app\\node_modules",
+      "artifact_type": "node_dependencies",
+      "risk": "SAFE",
+      "size_bytes": 157286400,
+      "file_count": 12000,
+      "is_symlink": false,
+      "proposed_action": "PROPOSE_REMOVE",
+      "reason": "SAFE repo-local generated artifact; candidate for future approved clean"
+    },
+    {
+      "entry_id": "demo-node-app/dist",
+      "repo_name": "demo-node-app",
+      "repo_relative_path": "demo-node-app",
+      "relative_path": "dist",
+      "path": "C:\\Users\\demo\\GitHub\\demo-node-app\\dist",
+      "artifact_type": "build_output",
+      "risk": "SAFE",
+      "size_bytes": 7340032,
+      "file_count": 96,
+      "is_symlink": false,
+      "proposed_action": "PROPOSE_REMOVE",
+      "reason": "SAFE repo-local generated artifact; candidate for future approved clean"
+    },
+    {
+      "entry_id": "demo-node-app/logs",
+      "repo_name": "demo-node-app",
+      "repo_relative_path": "demo-node-app",
+      "relative_path": "logs",
+      "path": "C:\\Users\\demo\\GitHub\\demo-node-app\\logs",
+      "artifact_type": "runtime_logs",
+      "risk": "REVIEW",
+      "size_bytes": 524288,
+      "file_count": 12,
+      "is_symlink": false,
+      "proposed_action": "REVIEW_REQUIRED",
+      "reason": "may contain user/runtime data; manual inspection required"
+    },
+    {
+      "entry_id": "demo-rust-cli/target",
+      "repo_name": "demo-rust-cli",
+      "repo_relative_path": "demo-rust-cli",
+      "relative_path": "target",
+      "path": "C:\\Users\\demo\\GitHub\\demo-rust-cli\\target",
+      "artifact_type": "rust_build_output",
+      "risk": "SAFE",
+      "size_bytes": 50331648,
+      "file_count": 1810,
+      "is_symlink": false,
+      "proposed_action": "PROPOSE_REMOVE",
+      "reason": "SAFE repo-local generated artifact; candidate for future approved clean"
+    }
+  ],
+  "summary": {
+    "total_entries": 7,
+    "proposed_remove_count": 5,
+    "proposed_remove_bytes": 246417408,
+    "review_required_count": 1,
+    "blocked_count": 1,
+    "no_action_count": 0,
+    "by_risk": {
+      "BLOCKED": 1,
+      "REVIEW": 1,
+      "SAFE": 5
+    }
+  },
+  "plan_hash": null
+}
