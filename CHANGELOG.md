@@ -1,5 +1,4 @@
 # Changelog
-
 ## v0.1.5
 
 - Added `docs/WINDOWS_QUICKSTART.md` with a sanitized Windows install-and-scan transcript.
