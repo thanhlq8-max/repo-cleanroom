@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.6
+
+- Added `docs/RELEASE_POLICY.md`: milestone-vs-package version tracks, alignment rule, release gates, and pre-release checklist.
+- Recorded that `pyproject.toml` stays at `0.1.0` until an explicit release task.
+- Documentation only; no scanner behavior change.
+- No package published.
+
 ## v0.1.5
 
 - Added `docs/WINDOWS_QUICKSTART.md` with a sanitized Windows install-and-scan transcript.
