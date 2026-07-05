@@ -188,6 +188,10 @@ def execute_clean(plan: dict[str, Any], root: Path, dry_run: bool) -> dict[str, 
             failed = True
 
     decisions = [record["decision"] for record in records]
+    proposed_total = sum(
+        1 for entry in plan.get("entries", []) if entry.get("proposed_action") == "PROPOSE_REMOVE"
+    )
+    partial = (not dry_run) and decisions.count(DECISION_REMOVED) < proposed_total
 
     return {
         "log_schema_version": "0.3.0",
@@ -209,7 +213,8 @@ def execute_clean(plan: dict[str, Any], root: Path, dry_run: bool) -> dict[str, 
             "not_processed": decisions.count(DECISION_NOT_PROCESSED),
             "not_proposed": decisions.count(DECISION_NOT_PROPOSED),
             "removed_bytes": removed_bytes,
-
+            "proposed_total": proposed_total,
+            "partial": partial,
         },
         "removed_paths": removed_paths,
     }
