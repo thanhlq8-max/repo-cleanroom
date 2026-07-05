@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.5.0
+
+- Added `docs/COMMAND_EVIDENCE_PRIVACY.md`: privacy contract for command evidence — no default shell-history access ever, explicit `--evidence-file` input only, no execution of evidence lines, mandatory sanitization (credential URLs, sensitive flag values, token-shaped strings, protected filenames) before anything is persisted, local-only outputs.
+- Documentation only; no evidence code exists yet (v0.5.1).
+
 ## v0.4.1
 
 - Added the `attest` command: assembles `attestation.json` and `final_report.md` from a plan, its clean action log, and its verify results.
