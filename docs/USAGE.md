@@ -57,6 +57,15 @@ output is sanitized per [`COMMAND_EVIDENCE_PRIVACY.md`](COMMAND_EVIDENCE_PRIVACY
 repo-cleanroom evidence --evidence-file my_commands.txt --scan-artifacts .cleanroom\artifact_inventory.json --out-dir .cleanroom
 ```
 
+## Docker scan (v0.6.x — read-only, explicit opt-in)
+
+Queries Docker through a fixed whitelist of read-only CLI commands and relates
+compose-labeled objects to your workspace. Nothing is created, stopped, or removed.
+
+```powershell
+repo-cleanroom docker-scan --root F:\GitHub --out-dir .cleanroom
+```
+
 ## Read outputs
 
 ```powershell

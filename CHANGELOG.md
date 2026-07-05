@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.6.0
+
+- Added the `docker-scan` command: read-only Docker inventory (`docker_inventory.json`) of containers, images, and volumes, relating compose-labeled objects to the selected workspace root.
+- Docker is queried exclusively through a fixed whitelist of read-only `docker` CLI argument lists (`version`, `ps --all`, `images`, `volume ls`, all JSON-formatted), `shell=False`, no user input in argv; a test asserts the whitelist contains no mutating verb.
+- No Docker object is created, started, stopped, or removed; the inventory records `docker_mutation_performed: false` and the exact queries used.
+- Docker unavailable → clean error, exit 2, no partial file.
+- Tests use an injected fake runner, so CI needs no Docker daemon.
+
 ## v0.5.1
 
 - Added the `evidence` command: maps an explicitly supplied plain-text evidence file to detected artifacts; writes `command_evidence.json` and `evidence_map.md`.
