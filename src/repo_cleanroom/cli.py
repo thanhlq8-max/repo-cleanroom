@@ -19,6 +19,13 @@ from repo_cleanroom.planners.plan_markdown import write_plan_markdown
 from repo_cleanroom.reports.json_report import write_json
 from repo_cleanroom.reports.markdown_report import write_findings_markdown
 from repo_cleanroom.safety.path_guard import PathGuardError, resolve_existing_directory
+
+from repo_cleanroom.verifier.attestation import (
+    AttestationError,
+    build_attestation_payload,
+    write_final_report,
+)
+
 from repo_cleanroom.verifier.verify import VerifyError, build_verify_payload, sha256_file
 from repo_cleanroom.scanner.artifact_detector import detect_artifacts
 from repo_cleanroom.scanner.manifest_detector import detect_manifests
@@ -320,6 +327,52 @@ def run_verify(args: argparse.Namespace) -> int:
         return 1
 
 
+
+def run_attest(args: argparse.Namespace) -> int:
+    """Run the attest command: assemble attestation.json + final_report.md."""
+
+    try:
+        plan = load_plan_file(args.plan)
+        action_log = load_plan_file(args.action_log)
+        verify_payload = load_plan_file(args.verify)
+
+        attestation = build_attestation_payload(plan, action_log, verify_payload)
+        attestation["inputs"] = {
+            "plan": {"path": str(Path(args.plan).resolve()), "sha256": sha256_file(args.plan)},
+            "action_log": {
+                "path": str(Path(args.action_log).resolve()),
+                "sha256": sha256_file(args.action_log),
+            },
+            "verify": {
+                "path": str(Path(args.verify).resolve()),
+                "sha256": sha256_file(args.verify),
+            },
+        }
+
+        out_dir = Path(args.out_dir).expanduser()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        write_json(out_dir / "attestation.json", attestation)
+        write_final_report(out_dir / "final_report.md", attestation)
+
+        counts = attestation["counts"]
+        print(f"STATUS: {attestation['status']}")
+        print(f"ROOT: {attestation['root']}")
+        print(f"OUT_DIR: {out_dir}")
+        print(f"CLEANED: {counts['cleaned']}")
+        print(f"SKIPPED: {counts['skipped']}")
+        print(f"FAILED: {counts['failed']}")
+        print(f"BLOCKED: {counts['blocked']}")
+        print(f"UNCHANGED: {counts['unchanged']}")
+        print(f"REMOVED_BYTES: {attestation['removed_bytes']}")
+        return 0 if attestation["status"] != "NOT_ATTESTED_VERIFICATION_FAILED" else 1
+    except (PlanHashError, AttestationError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser."""
 
@@ -415,6 +468,29 @@ def build_parser() -> argparse.ArgumentParser:
         help="directory where verify.json will be written; required by policy",
     )
     verify.set_defaults(func=run_verify)
+
+
+    attest = subparsers.add_parser(
+        "attest",
+        help="assemble attestation.json and final_report.md from plan, action log, and verify results",
+    )
+    attest.add_argument("--plan", required=True, help="path to the executed cleanup_plan.json")
+    attest.add_argument(
+        "--action-log",
+        required=True,
+        help="path to the clean_action_log.json produced by the clean command",
+    )
+    attest.add_argument(
+        "--verify",
+        required=True,
+        help="path to the verify.json produced by the verify command",
+    )
+    attest.add_argument(
+        "--out-dir",
+        required=True,
+        help="directory where attestation.json and final_report.md will be written",
+    )
+    attest.set_defaults(func=run_attest)
 
     return parser
 
