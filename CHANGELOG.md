@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.8.0
+
+- Version alignment (explicit maintainer release task, 2026-07-05): `pyproject.toml` version bumped from `0.1.0` to `0.8.0`, aligning the package track with the milestone track per `docs/RELEASE_POLICY.md`.
+- Aligned stale wording with actual capabilities: README intro/capabilities/roadmap/status, SECURITY.md supported status, CLI parser description, scan `public_safety_check` note, and the `findings.md` safety note no longer describe the tool as v0.1.0/read-only-only.
+- Post-merge step: tag `v0.8.0` on the merge commit (tag name equals package version per release policy).
+- No package published; TestPyPI/PyPI remain separate explicitly-commanded steps (v0.8.1/v0.8.2).
+
 ## v0.7.2
 
 - Added `scripts/benchmark_scan.py` and `repo_cleanroom.demo.benchmark`: reproducible scan/plan benchmark against synthetic workspaces; requires a fresh working directory and writes only inside it.

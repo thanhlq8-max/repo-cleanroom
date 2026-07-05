@@ -2,7 +2,7 @@
 
 ## Supported status
 
-Repo Cleanroom is pre-1.0 alpha. v0.1.0 is read-only and has no cleanup/delete command.
+Repo Cleanroom is pre-1.0 (v0.8.x). All commands are read-only or report-only except `clean`, which removes only SAFE entries of one byte-exact, human-approved plan and re-checks every guard at delete time.
 
 ## Sensitive data policy
 
@@ -26,4 +26,4 @@ Open a private security advisory on GitHub if available. If private reporting is
 
 ## Safety guarantees not made
 
-Repo Cleanroom does not claim to fully clean every repository or repair a machine. v0.1.0 only reports findings.
+Repo Cleanroom does not claim to fully clean every repository or repair a machine. Removal is limited to approved SAFE plan entries, there is no rollback, and attestation reports only what the logs prove.

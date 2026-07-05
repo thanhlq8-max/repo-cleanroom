@@ -112,7 +112,7 @@ def build_scan_payload(root: str | Path) -> tuple[dict[str, Any], dict[str, Any]
         "external_side_effect": False,
         "cleanup_performed": False,
         "notes": [
-            "v0.1.0 scan is read-only.",
+            "The scan command is read-only.",
             "Secret guard uses path/name classification only and does not read file contents.",
             "Target repository scripts are not executed.",
         ],
@@ -517,7 +517,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser(
         prog="repo-cleanroom",
-        description="Read-only scanner for repo-local generated artifacts.",
+        description=(
+            "Safety-first scanner, planner, and approval-gated cleaner "
+            "for repo-local generated artifacts."
+        ),
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
