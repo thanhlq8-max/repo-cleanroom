@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.1
+
+- Added the `attest` command: assembles `attestation.json` and `final_report.md` from a plan, its clean action log, and its verify results.
+- The report separates entries into cleaned, skipped, failed, blocked, and unchanged, with per-category tables and reasons.
+- Attestation status: `ATTESTED`, `ATTESTED_DRY_RUN`, or `NOT_ATTESTED_VERIFICATION_FAILED` (exit 1) — a failed verification is attested as a discrepancy, never as a clean state.
+- SHA-256 provenance of all three inputs recorded; mismatched plan/log/verify ids are rejected with no attestation.
+- The report explicitly limits its claims to the plan's entries and repeats the no-rollback policy.
+
 ## v0.4.0
 
 - Added the `verify` command: read-only comparison of the filesystem against an executed plan and its `clean_action_log.json`; writes `verify.json`.

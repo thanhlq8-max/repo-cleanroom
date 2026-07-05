@@ -34,6 +34,19 @@ repo-cleanroom clean --root F:\GitHub --plan .cleanroom\cleanup_plan.json --toke
 repo-cleanroom clean --root F:\GitHub --plan .cleanroom\cleanup_plan.json --token .cleanroom\approval_token.json --yes-exact-plan <PLAN_HASH> --out-dir .cleanroom
 ```
 
+## Verify + attest (v0.4.x — read-only evidence)
+
+`verify` compares the filesystem against the plan and action log (removed entries must
+be gone, everything else must still exist). `attest` assembles the final evidence pack.
+
+```powershell
+repo-cleanroom verify --root F:\GitHub --plan .cleanroom\cleanup_plan.json --action-log .cleanroom\clean_action_log.json --out-dir .cleanroom
+repo-cleanroom attest --plan .cleanroom\cleanup_plan.json --action-log .cleanroom\clean_action_log.json --verify .cleanroom\verify.json --out-dir .cleanroom
+```
+
+Outputs: `verify.json`, then `attestation.json` + `final_report.md` (cleaned / skipped /
+failed / blocked / unchanged). A failed verification is attested as a discrepancy.
+
 ## Read outputs
 
 ```powershell
