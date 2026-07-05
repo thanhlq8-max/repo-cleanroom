@@ -64,6 +64,7 @@ compose-labeled objects to your workspace. Nothing is created, stopped, or remov
 
 ```powershell
 repo-cleanroom docker-scan --root F:\GitHub --out-dir .cleanroom
+
 repo-cleanroom docker-plan --docker-inventory .cleanroom\docker_inventory.json --out-dir .cleanroom
 ```
 

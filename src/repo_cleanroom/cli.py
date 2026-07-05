@@ -12,7 +12,9 @@ from typing import Any
 from repo_cleanroom.cleaner.approval import ApprovalError, build_approval_token, verify_approval_token
 from repo_cleanroom.cleaner.clean_report import write_clean_report
 from repo_cleanroom.cleaner.executor import execute_clean
+
 from repo_cleanroom.dockerscan.docker_plan import DockerPlanError, build_docker_plan
+
 from repo_cleanroom.dockerscan.docker_scan import DockerScanError, build_docker_inventory
 from repo_cleanroom.evidence.importer import EvidenceError, build_evidence_payload, render_evidence_map
 from repo_cleanroom.models import SCHEMA_VERSION
@@ -435,6 +437,7 @@ def run_docker_scan(args: argparse.Namespace) -> int:
         return 1
 
 
+
 def run_docker_plan(args: argparse.Namespace) -> int:
     """Run the docker-plan command: informational plan, nothing executable."""
 
@@ -462,7 +465,6 @@ def run_docker_plan(args: argparse.Namespace) -> int:
     except OSError as exc:
         print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
         return 1
-
 
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser."""
@@ -620,6 +622,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     docker_scan.set_defaults(func=run_docker_scan)
 
+
     docker_plan = subparsers.add_parser(
         "docker-plan",
         help="informational docker cleanup plan from a docker inventory; this tool cannot execute it",
@@ -635,6 +638,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="directory where docker_cleanup_plan.json will be written; required by policy",
     )
     docker_plan.set_defaults(func=run_docker_plan)
+
 
     return parser
 
