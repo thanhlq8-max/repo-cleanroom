@@ -706,6 +706,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     html_report.set_defaults(func=run_html_report)
 
+
     demo_workspace = subparsers.add_parser(
         "demo-workspace",
         help="generate a synthetic demo workspace (refuses non-empty targets)",
@@ -722,6 +723,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="number of synthetic repositories to create (default 3)",
     )
     demo_workspace.set_defaults(func=run_demo_workspace)
+
 
     return parser
 
