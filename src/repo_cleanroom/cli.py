@@ -490,7 +490,6 @@ def run_html_report(args: argparse.Namespace) -> int:
         print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
         return 1
 
-
 def run_demo_workspace(args: argparse.Namespace) -> int:
     """Run the demo-workspace command: generate a synthetic try-it workspace."""
 
@@ -510,7 +509,6 @@ def run_demo_workspace(args: argparse.Namespace) -> int:
     except OSError as exc:
         print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
         return 1
-
 
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser."""
@@ -706,6 +704,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     html_report.set_defaults(func=run_html_report)
 
+
     demo_workspace = subparsers.add_parser(
         "demo-workspace",
         help="generate a synthetic demo workspace (refuses non-empty targets)",
@@ -722,6 +721,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="number of synthetic repositories to create (default 3)",
     )
     demo_workspace.set_defaults(func=run_demo_workspace)
+
 
     return parser
 
