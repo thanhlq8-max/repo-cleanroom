@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.7.1
+
+- Added the `demo-workspace` command: generates a synthetic workspace (web/python/rust repo shapes with node_modules, .venv, __pycache__, dist, target, logs, and a placeholder .env) for trying the scan → plan pipeline safely.
+- Refuses to write into an existing non-empty directory, so it can never touch real data (tested).
+- `--repo-count` scales the workspace by repeating the python repo shape; used by the v0.7.2 benchmark.
+- All content synthetic; the .env value is an obvious placeholder.
+- End-to-end test: generated workspace scans and plans successfully, including a BLOCKED finding.
+
 ## v0.7.0
 
 - Added the `html-report` command: renders a static, self-contained `findings.html` review page from existing `inventory.json` + `artifact_inventory.json`.
