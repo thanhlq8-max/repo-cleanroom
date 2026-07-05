@@ -47,6 +47,16 @@ repo-cleanroom attest --plan .cleanroom\cleanup_plan.json --action-log .cleanroo
 Outputs: `verify.json`, then `attestation.json` + `final_report.md` (cleaned / skipped /
 failed / blocked / unchanged). A failed verification is attested as a discrepancy.
 
+## Evidence mapping (v0.5.x — explicit opt-in, informational)
+
+Assemble a plain-text file of commands you remember running, then map it to detected
+artifacts. The tool never reads shell history and never executes evidence lines; all
+output is sanitized per [`COMMAND_EVIDENCE_PRIVACY.md`](COMMAND_EVIDENCE_PRIVACY.md).
+
+```powershell
+repo-cleanroom evidence --evidence-file my_commands.txt --scan-artifacts .cleanroom\artifact_inventory.json --out-dir .cleanroom
+```
+
 ## Read outputs
 
 ```powershell
