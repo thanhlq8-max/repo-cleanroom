@@ -72,6 +72,14 @@ repo-cleanroom docker-plan --docker-inventory .cleanroom\docker_inventory.json -
 (stopped workspace containers, dangling images), never proposes volume deletion,
 and cannot be executed by this tool.
 
+## HTML report (v0.7.x — static review page)
+
+```powershell
+repo-cleanroom html-report --inventory .cleanroom\inventory.json --scan-artifacts .cleanroom\artifact_inventory.json --out-dir .cleanroom
+```
+
+Produces a self-contained `findings.html` (no scripts, no external resources).
+
 ## Read outputs
 
 ```powershell

@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.7.0
+
+- Added the `html-report` command: renders a static, self-contained `findings.html` review page from existing `inventory.json` + `artifact_inventory.json`.
+- Single file, inline CSS, no JavaScript, no external resources; risk-badged groups mirror `findings.md` (SAFE → REVIEW → DANGEROUS → BLOCKED, size-sorted).
+- Every value from the scanned workspace is HTML-escaped — untrusted repo/file names cannot inject markup (tested with script/img payloads).
+- Writes only `findings.html` into `--out-dir`; no other filesystem side effect (tested by snapshot).
+
 ## v0.6.1
 
 - Added the `docker-plan` command: builds an informational `docker_cleanup_plan.json` from a docker inventory.
