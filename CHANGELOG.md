@@ -8,6 +8,7 @@
 - SHA-256 provenance of all three inputs recorded; mismatched plan/log/verify ids are rejected with no attestation.
 - The report explicitly limits its claims to the plan's entries and repeats the no-rollback policy.
 
+
 ## v0.4.0
 
 - Added the `verify` command: read-only comparison of the filesystem against an executed plan and its `clean_action_log.json`; writes `verify.json`.

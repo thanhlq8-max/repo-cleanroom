@@ -19,11 +19,13 @@ from repo_cleanroom.planners.plan_markdown import write_plan_markdown
 from repo_cleanroom.reports.json_report import write_json
 from repo_cleanroom.reports.markdown_report import write_findings_markdown
 from repo_cleanroom.safety.path_guard import PathGuardError, resolve_existing_directory
+
 from repo_cleanroom.verifier.attestation import (
     AttestationError,
     build_attestation_payload,
     write_final_report,
 )
+
 from repo_cleanroom.verifier.verify import VerifyError, build_verify_payload, sha256_file
 from repo_cleanroom.scanner.artifact_detector import detect_artifacts
 from repo_cleanroom.scanner.manifest_detector import detect_manifests
@@ -325,6 +327,7 @@ def run_verify(args: argparse.Namespace) -> int:
         return 1
 
 
+
 def run_attest(args: argparse.Namespace) -> int:
     """Run the attest command: assemble attestation.json + final_report.md."""
 
@@ -465,6 +468,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="directory where verify.json will be written; required by policy",
     )
     verify.set_defaults(func=run_verify)
+
 
     attest = subparsers.add_parser(
         "attest",
