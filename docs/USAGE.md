@@ -16,6 +16,24 @@ py -m pip install -e .[dev]
 repo-cleanroom scan --root F:\GitHub --out-dir .cleanroom
 ```
 
+## Plan (PLAN_ONLY — removes nothing)
+
+```powershell
+repo-cleanroom plan --scan-artifacts .cleanroom\artifact_inventory.json --out-dir .cleanroom
+```
+
+## Approve + clean (v0.3.x — approval-gated, SAFE plan entries only)
+
+Review `cleanup_plan.md` first. Approval binds to the exact plan bytes; `clean`
+refuses anything except the approved plan on the approved root. There is no
+rollback; always run `--dry-run` first.
+
+```powershell
+repo-cleanroom approve --plan .cleanroom\cleanup_plan.json --approved-by "your-name" --out-dir .cleanroom
+repo-cleanroom clean --root F:\GitHub --plan .cleanroom\cleanup_plan.json --token .cleanroom\approval_token.json --yes-exact-plan <PLAN_HASH> --dry-run --out-dir .cleanroom
+repo-cleanroom clean --root F:\GitHub --plan .cleanroom\cleanup_plan.json --token .cleanroom\approval_token.json --yes-exact-plan <PLAN_HASH> --out-dir .cleanroom
+```
+
 ## Read outputs
 
 ```powershell
