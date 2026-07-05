@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.7.2
+
+- Added `scripts/benchmark_scan.py` and `repo_cleanroom.demo.benchmark`: reproducible scan/plan benchmark against synthetic workspaces; requires a fresh working directory and writes only inside it.
+- Added `docs/PERFORMANCE.md` with measured results (100 repos: scan 0.74 s / plan 0.47 s; 500 repos: scan 3.62 s / plan 2.37 s on Windows 10, Python 3.13) and explicit limitations — no claim beyond the included data.
+- Benchmark smoke tests (end-to-end at small scale; reused working directory refused).
+
 ## v0.7.1
 
 - Added the `demo-workspace` command: generates a synthetic workspace (web/python/rust repo shapes with node_modules, .venv, __pycache__, dist, target, logs, and a placeholder .env) for trying the scan → plan pipeline safely.
