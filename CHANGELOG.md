@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.1
+
+- Added `clean_report.md` output for every clean run: status (COMPLETE/PARTIAL/DRY_RUN), per-entry table of everything not removed with reasons, and an explicit no-rollback recovery policy.
+- Added `partial` and `proposed_total` to the action-log summary; console prints `PARTIAL: YES/NO` and `ROLLBACK: NOT_AVAILABLE_BY_DESIGN`; `STATUS: CLEAN_PARTIAL` when some proposed entries were not removed.
+- Added dry-run parity test: the dry-run would-remove set must equal the real-run removed set on an unchanged workspace.
+- Added failure-recovery tests: locked-file removal error → fail-fast, later entries NOT_PROCESSED, partial report; planted-secret skip → PARTIAL status.
+- No rollback is claimed anywhere; a partially executed plan requires rescan → replan → reapprove.
+
 ## v0.3.0
 
 - Added the `approve` command: issues `approval_token.json` bound to one exact plan via the canonical SHA-256 plan hash (docs/APPROVAL_TOKEN.md); 24-hour expiry; `--approved-by` required.
