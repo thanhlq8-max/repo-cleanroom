@@ -12,7 +12,7 @@ from typing import Any
 from repo_cleanroom.cleaner.approval import ApprovalError, build_approval_token, verify_approval_token
 from repo_cleanroom.cleaner.clean_report import write_clean_report
 from repo_cleanroom.cleaner.executor import execute_clean
-
+from repo_cleanroom.demo.workspace_generator import DemoWorkspaceError, generate_demo_workspace
 from repo_cleanroom.dockerscan.docker_plan import DockerPlanError, build_docker_plan
 
 from repo_cleanroom.dockerscan.docker_scan import DockerScanError, build_docker_inventory
@@ -491,6 +491,27 @@ def run_html_report(args: argparse.Namespace) -> int:
         return 1
 
 
+def run_demo_workspace(args: argparse.Namespace) -> int:
+    """Run the demo-workspace command: generate a synthetic try-it workspace."""
+
+    try:
+        result = generate_demo_workspace(args.out_dir, repo_count=args.repo_count)
+
+        print("STATUS: SYNTHETIC_DEMO_WORKSPACE_CREATED")
+        print(f"ROOT: {result['root']}")
+        print(f"REPOS_CREATED: {len(result['repos_created'])}")
+        print("SYNTHETIC_ONLY: YES")
+        print("NEXT: repo-cleanroom scan --root "
+              f"\"{result['root']}\" --out-dir <your-report-dir>")
+        return 0
+    except DemoWorkspaceError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser."""
 
@@ -684,6 +705,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="directory where findings.html will be written; required by policy",
     )
     html_report.set_defaults(func=run_html_report)
+
+    demo_workspace = subparsers.add_parser(
+        "demo-workspace",
+        help="generate a synthetic demo workspace (refuses non-empty targets)",
+    )
+    demo_workspace.add_argument(
+        "--out-dir",
+        required=True,
+        help="new or empty directory where the synthetic workspace will be created",
+    )
+    demo_workspace.add_argument(
+        "--repo-count",
+        type=int,
+        default=3,
+        help="number of synthetic repositories to create (default 3)",
+    )
+    demo_workspace.set_defaults(func=run_demo_workspace)
 
     return parser
 

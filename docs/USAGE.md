@@ -80,6 +80,16 @@ repo-cleanroom html-report --inventory .cleanroom\inventory.json --scan-artifact
 
 Produces a self-contained `findings.html` (no scripts, no external resources).
 
+## Demo workspace (v0.7.x — synthetic try-it fixture)
+
+```powershell
+repo-cleanroom demo-workspace --out-dir C:\cleanroom-demo\workspace
+repo-cleanroom scan --root C:\cleanroom-demo\workspace --out-dir C:\cleanroom-demo\.cleanroom
+```
+
+The generator refuses non-empty target directories and writes only synthetic
+placeholder content.
+
 ## Read outputs
 
 ```powershell
