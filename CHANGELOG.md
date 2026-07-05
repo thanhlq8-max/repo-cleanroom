@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.6.1
+
+- Added the `docker-plan` command: builds an informational `docker_cleanup_plan.json` from a docker inventory.
+- Fixed policy: stopped workspace-linked containers and dangling images → REVIEW_REQUIRED (manual review suggestions only); everything else → NO_ACTION; every volume → FORBIDDEN_DEFAULT.
+- Volumes are never proposed for deletion; the summary pins `volumes_proposed_for_deletion: 0`.
+- The plan is not executable: the tool has no Docker mutation capability, recorded as `tool_can_execute_this_plan: false`.
+- Pure file transformation with SHA-256 provenance of the source inventory; no Docker invocation.
+
 ## v0.6.0
 
 - Added the `docker-scan` command: read-only Docker inventory (`docker_inventory.json`) of containers, images, and volumes, relating compose-labeled objects to the selected workspace root.

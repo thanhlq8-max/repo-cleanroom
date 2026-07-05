@@ -12,6 +12,9 @@ from typing import Any
 from repo_cleanroom.cleaner.approval import ApprovalError, build_approval_token, verify_approval_token
 from repo_cleanroom.cleaner.clean_report import write_clean_report
 from repo_cleanroom.cleaner.executor import execute_clean
+
+from repo_cleanroom.dockerscan.docker_plan import DockerPlanError, build_docker_plan
+
 from repo_cleanroom.dockerscan.docker_scan import DockerScanError, build_docker_inventory
 from repo_cleanroom.evidence.importer import EvidenceError, build_evidence_payload, render_evidence_map
 from repo_cleanroom.models import SCHEMA_VERSION
@@ -434,6 +437,35 @@ def run_docker_scan(args: argparse.Namespace) -> int:
         return 1
 
 
+
+def run_docker_plan(args: argparse.Namespace) -> int:
+    """Run the docker-plan command: informational plan, nothing executable."""
+
+    try:
+        payload = build_docker_plan(args.docker_inventory)
+
+        out_dir = Path(args.out_dir).expanduser()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        write_json(out_dir / "docker_cleanup_plan.json", payload)
+
+        summary = payload["summary"]
+        print("STATUS: DOCKER_PLAN_INFORMATIONAL_ONLY_COMPLETE")
+        print(f"ROOT: {payload['root']}")
+        print(f"OUT_DIR: {out_dir}")
+        print(f"PLAN_ENTRIES: {summary['total_entries']}")
+        print(f"REVIEW_REQUIRED: {summary['review_required']}")
+        print(f"NO_ACTION: {summary['no_action']}")
+        print(f"FORBIDDEN_DEFAULT: {summary['forbidden_default']}")
+        print(f"VOLUMES_PROPOSED_FOR_DELETION: {summary['volumes_proposed_for_deletion']}")
+        print("DOCKER_MUTATION_PERFORMED: NO")
+        return 0
+    except DockerPlanError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
+        return 1
+
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser."""
 
@@ -589,6 +621,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="directory where docker_inventory.json will be written; required by policy",
     )
     docker_scan.set_defaults(func=run_docker_scan)
+
+
+    docker_plan = subparsers.add_parser(
+        "docker-plan",
+        help="informational docker cleanup plan from a docker inventory; this tool cannot execute it",
+    )
+    docker_plan.add_argument(
+        "--docker-inventory",
+        required=True,
+        help="path to a docker_inventory.json produced by the docker-scan command",
+    )
+    docker_plan.add_argument(
+        "--out-dir",
+        required=True,
+        help="directory where docker_cleanup_plan.json will be written; required by policy",
+    )
+    docker_plan.set_defaults(func=run_docker_plan)
+
 
     return parser
 

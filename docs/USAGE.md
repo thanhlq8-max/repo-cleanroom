@@ -64,7 +64,13 @@ compose-labeled objects to your workspace. Nothing is created, stopped, or remov
 
 ```powershell
 repo-cleanroom docker-scan --root F:\GitHub --out-dir .cleanroom
+
+repo-cleanroom docker-plan --docker-inventory .cleanroom\docker_inventory.json --out-dir .cleanroom
 ```
+
+`docker-plan` is informational only: it suggests what you may review manually
+(stopped workspace containers, dangling images), never proposes volume deletion,
+and cannot be executed by this tool.
 
 ## Read outputs
 
