@@ -12,6 +12,7 @@ from typing import Any
 from repo_cleanroom.cleaner.approval import ApprovalError, build_approval_token, verify_approval_token
 from repo_cleanroom.cleaner.clean_report import write_clean_report
 from repo_cleanroom.cleaner.executor import execute_clean
+from repo_cleanroom.dockerscan.docker_scan import DockerScanError, build_docker_inventory
 from repo_cleanroom.evidence.importer import EvidenceError, build_evidence_payload, render_evidence_map
 from repo_cleanroom.models import SCHEMA_VERSION
 from repo_cleanroom.planners.plan_builder import PlanBuildError, build_plan_payload
@@ -403,6 +404,36 @@ def run_evidence(args: argparse.Namespace) -> int:
         return 1
 
 
+def run_docker_scan(args: argparse.Namespace) -> int:
+    """Run the docker-scan command: read-only Docker inventory."""
+
+    try:
+        resolved_root = resolve_existing_directory(args.root)
+        payload = build_docker_inventory(resolved_root)
+
+        out_dir = Path(args.out_dir).expanduser()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        write_json(out_dir / "docker_inventory.json", payload)
+
+        summary = payload["summary"]
+        print("STATUS: DOCKER_READ_ONLY_SCAN_COMPLETE")
+        print(f"ROOT: {payload['root']}")
+        print(f"OUT_DIR: {out_dir}")
+        print(f"CONTAINERS: {summary['containers']}")
+        print(f"CONTAINERS_LINKED_TO_WORKSPACE: {summary['containers_linked_to_workspace']}")
+        print(f"IMAGES: {summary['images']}")
+        print(f"DANGLING_IMAGES: {summary['dangling_images']}")
+        print(f"VOLUMES: {summary['volumes']}")
+        print("DOCKER_MUTATION_PERFORMED: NO")
+        return 0
+    except (PathGuardError, DockerScanError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser."""
 
@@ -542,6 +573,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="directory where command_evidence.json and evidence_map.md will be written",
     )
     evidence.set_defaults(func=run_evidence)
+
+    docker_scan = subparsers.add_parser(
+        "docker-scan",
+        help="read-only Docker inventory via a fixed whitelist of docker CLI queries; mutates nothing",
+    )
+    docker_scan.add_argument(
+        "--root",
+        required=True,
+        help="workspace root used to relate compose-labeled objects to this workspace",
+    )
+    docker_scan.add_argument(
+        "--out-dir",
+        required=True,
+        help="directory where docker_inventory.json will be written; required by policy",
+    )
+    docker_scan.set_defaults(func=run_docker_scan)
 
     return parser
 
