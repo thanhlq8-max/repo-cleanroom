@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from repo_cleanroom.cleaner.approval import ApprovalError, build_approval_token, verify_approval_token
+
 from repo_cleanroom.cleaner.executor import execute_clean
 from repo_cleanroom.models import SCHEMA_VERSION
 from repo_cleanroom.planners.plan_builder import PlanBuildError, build_plan_payload
@@ -231,6 +232,7 @@ def run_clean(args: argparse.Namespace) -> int:
         out_dir = Path(args.out_dir).expanduser()
         out_dir.mkdir(parents=True, exist_ok=True)
         write_json(out_dir / "clean_action_log.json", result)
+
         if not args.dry_run:
             write_json(
                 out_dir / "removed_manifest.json",
@@ -249,6 +251,7 @@ def run_clean(args: argparse.Namespace) -> int:
             print("STATUS: CLEAN_DRY_RUN_COMPLETE")
         elif result["failed"]:
             print("STATUS: CLEAN_ABORTED")
+
         else:
             print("STATUS: CLEAN_COMPLETE")
         print(f"ROOT: {result['root']}")
@@ -261,7 +264,7 @@ def run_clean(args: argparse.Namespace) -> int:
         )
         print(f"ERRORS: {summary['errors']}")
         print(f"REMOVED_BYTES: {summary['removed_bytes']}")
-        print(f"CLEANUP_PERFORMED: {'NO' if args.dry_run else 'YES'}")
+
         return 1 if result["failed"] else 0
     except (PathGuardError, PlanHashError, ApprovalError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
