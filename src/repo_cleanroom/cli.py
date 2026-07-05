@@ -21,6 +21,7 @@ from repo_cleanroom.models import SCHEMA_VERSION
 from repo_cleanroom.planners.plan_builder import PlanBuildError, build_plan_payload
 from repo_cleanroom.planners.plan_hash import PlanHashError, compute_plan_hash, load_plan_file
 from repo_cleanroom.planners.plan_markdown import write_plan_markdown
+from repo_cleanroom.reports.html_report import write_findings_html
 from repo_cleanroom.reports.json_report import write_json
 from repo_cleanroom.reports.markdown_report import write_findings_markdown
 from repo_cleanroom.safety.path_guard import PathGuardError, resolve_existing_directory
@@ -466,6 +467,30 @@ def run_docker_plan(args: argparse.Namespace) -> int:
         print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
         return 1
 
+def run_html_report(args: argparse.Namespace) -> int:
+    """Run the html-report command: static HTML review page from scan payloads."""
+
+    try:
+        inventory = load_plan_file(args.inventory)
+        artifact_inventory = load_plan_file(args.scan_artifacts)
+
+        out_dir = Path(args.out_dir).expanduser()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        write_findings_html(out_dir / "findings.html", inventory, artifact_inventory)
+
+        print("STATUS: HTML_REPORT_COMPLETE")
+        print(f"OUT_DIR: {out_dir}")
+        print(f"REPORT: {out_dir / 'findings.html'}")
+        print("FILESYSTEM_MODIFIED_BEYOND_OUT_DIR: NO")
+        return 0
+    except PlanHashError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser."""
 
@@ -639,6 +664,26 @@ def build_parser() -> argparse.ArgumentParser:
     )
     docker_plan.set_defaults(func=run_docker_plan)
 
+    html_report = subparsers.add_parser(
+        "html-report",
+        help="render a static, self-contained findings.html from existing scan reports",
+    )
+    html_report.add_argument(
+        "--inventory",
+        required=True,
+        help="path to an inventory.json produced by the scan command",
+    )
+    html_report.add_argument(
+        "--scan-artifacts",
+        required=True,
+        help="path to an artifact_inventory.json produced by the scan command",
+    )
+    html_report.add_argument(
+        "--out-dir",
+        required=True,
+        help="directory where findings.html will be written; required by policy",
+    )
+    html_report.set_defaults(func=run_html_report)
 
     return parser
 
