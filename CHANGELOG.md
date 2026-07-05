@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.0
+
+- Added the `verify` command: read-only comparison of the filesystem against an executed plan and its `clean_action_log.json`; writes `verify.json`.
+- Expected-state rules: REMOVED entries must be absent (`FAIL_STILL_PRESENT` otherwise); every non-removed entry must still exist (`FAIL_MISSING` otherwise — detects out-of-band data loss); SKIPPED_CHANGED entries are indeterminate.
+- Records SHA-256 provenance of the input plan and action log inside `verify.json`.
+- Rejects mismatched plan/log ids or roots with no verdict; exit codes: 0 verified, 1 verification failed, 2 inconsistent inputs.
+- Verification modifies nothing (tested by snapshot).
+
 ## v0.3.1
 
 - Added `clean_report.md` output for every clean run: status (COMPLETE/PARTIAL/DRY_RUN), per-entry table of everything not removed with reasons, and an explicit no-rollback recovery policy.

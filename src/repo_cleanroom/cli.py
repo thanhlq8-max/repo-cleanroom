@@ -19,6 +19,7 @@ from repo_cleanroom.planners.plan_markdown import write_plan_markdown
 from repo_cleanroom.reports.json_report import write_json
 from repo_cleanroom.reports.markdown_report import write_findings_markdown
 from repo_cleanroom.safety.path_guard import PathGuardError, resolve_existing_directory
+from repo_cleanroom.verifier.verify import VerifyError, build_verify_payload, sha256_file
 from repo_cleanroom.scanner.artifact_detector import detect_artifacts
 from repo_cleanroom.scanner.manifest_detector import detect_manifests
 from repo_cleanroom.scanner.repo_discovery import discover_repositories
@@ -279,6 +280,46 @@ def run_clean(args: argparse.Namespace) -> int:
         return 1
 
 
+def run_verify(args: argparse.Namespace) -> int:
+    """Run the verify command. Read-only: compares filesystem vs plan + action log."""
+
+    try:
+        resolved_root = resolve_existing_directory(args.root)
+        plan = load_plan_file(args.plan)
+        action_log = load_plan_file(args.action_log)
+
+        payload = build_verify_payload(plan, action_log, resolved_root)
+        payload["inputs"] = {
+            "plan": {"path": str(Path(args.plan).resolve()), "sha256": sha256_file(args.plan)},
+            "action_log": {
+                "path": str(Path(args.action_log).resolve()),
+                "sha256": sha256_file(args.action_log),
+            },
+        }
+
+        out_dir = Path(args.out_dir).expanduser()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        write_json(out_dir / "verify.json", payload)
+
+        summary = payload["summary"]
+        print("STATUS: " + ("VERIFY_COMPLETE" if summary["verified"] else "VERIFY_FAILED"))
+        print(f"ROOT: {payload['root']}")
+        print(f"OUT_DIR: {out_dir}")
+        print(f"ENTRIES_CHECKED: {summary['total_entries']}")
+        print(f"OK: {summary['ok']}")
+        print(f"FAIL_STILL_PRESENT: {summary['fail_still_present']}")
+        print(f"FAIL_MISSING: {summary['fail_missing']}")
+        print(f"VERIFIED: {'YES' if summary['verified'] else 'NO'}")
+        print("FILESYSTEM_MODIFIED: NO")
+        return 0 if summary["verified"] else 1
+    except (PathGuardError, PlanHashError, VerifyError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser."""
 
@@ -356,6 +397,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="report what would be removed without removing anything",
     )
     clean.set_defaults(func=run_clean)
+
+    verify = subparsers.add_parser(
+        "verify",
+        help="read-only check of the filesystem against a plan and its clean action log",
+    )
+    verify.add_argument("--root", required=True, help="root directory the plan was executed on")
+    verify.add_argument("--plan", required=True, help="path to the executed cleanup_plan.json")
+    verify.add_argument(
+        "--action-log",
+        required=True,
+        help="path to the clean_action_log.json produced by the clean command",
+    )
+    verify.add_argument(
+        "--out-dir",
+        required=True,
+        help="directory where verify.json will be written; required by policy",
+    )
+    verify.set_defaults(func=run_verify)
 
     return parser
 
