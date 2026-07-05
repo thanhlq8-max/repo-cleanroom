@@ -121,7 +121,7 @@ def render_findings_markdown(inventory: dict[str, Any], artifact_inventory: dict
             lines.append("")
     lines.append("## Safety notes")
     lines.append("")
-    lines.append("- v0.1.0 is read-only and does not remove files.")
+    lines.append("- The scan is read-only and does not remove files.")
     lines.append("- Detection does not equal removal approval.")
     lines.append("- `BLOCKED` items must not be automatically removed or printed as content.")
     lines.append("- Symlink targets are not traversed for size estimation.")

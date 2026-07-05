@@ -6,35 +6,29 @@ Repo Cleanroom is a safety-first CLI for developers who clone and run many open-
 
 It scans a user-selected workspace, discovers Git repositories, detects common repo-local generated artifacts, classifies cleanup risk, and writes JSON/Markdown reports.
 
-> v0.1.0 is **read-only**. It does not delete files, uninstall packages, prune Docker, modify Git state, read shell history, or change system configuration.
+> `scan`, `plan`, `verify`, `attest`, `evidence`, `docker-scan`, and `docker-plan` are **read-only or report-only**. The only command that removes anything is `clean`, and it acts solely on `SAFE` entries of one byte-exact, human-approved plan with every guard re-checked at delete time. The tool never uninstalls packages, prunes Docker, modifies Git state, reads shell history, or changes system configuration.
 
 ## Why this exists
 
 Modern OSS and AI-coding workflows make it easy to clone, install, test, and abandon many repositories. Each repo can leave behind dependency folders, virtual environments, build outputs, caches, coverage files, logs, and runtime artifacts. Over time, a developer workstation becomes difficult to audit and clean safely.
 
-Repo Cleanroom starts with the safe part first:
+Repo Cleanroom implements the full safety-gated workflow:
 
 ```text
-SCAN -> REPORT -> REVIEW
+SCAN -> PLAN -> APPROVE -> CLEAN -> VERIFY -> ATTESTATION REPORT
 ```
 
-Later versions will add:
+## Capabilities (v0.8.0)
 
-```text
-SCAN -> EVIDENCE MAP -> USER-APPROVED PLAN -> CLEAN -> VERIFY -> ATTESTATION REPORT
-```
-
-## v0.1.x capabilities
-
-- Discover Git repositories under a selected root.
-- Detect project manifests and infer ecosystems.
-- Detect common repo-local artifacts such as `node_modules`, `.venv`, `__pycache__`, `.pytest_cache`, `dist`, `build`, `target`, `bin`, `obj`, `.next`, and `.nuxt`.
-- Classify artifacts into `SAFE`, `REVIEW`, `DANGEROUS`, or `BLOCKED`.
-- Block sensitive path patterns such as `.env`, private keys, credentials, wallet-like files, and token-like files.
-- Estimate artifact size without following symlinks.
-- Generate JSON and Markdown report artifacts.
-- Show the largest detected artifacts first in `findings.md`.
-- Validate core JSON report schema through tests.
+- `scan` — discover Git repositories, detect manifests and common repo-local artifacts (`node_modules`, `.venv`, `__pycache__`, `.pytest_cache`, `dist`, `build`, `target`, and more), classify risk (`SAFE`/`REVIEW`/`DANGEROUS`/`BLOCKED`), estimate sizes without following symlinks, and write JSON/Markdown reports. Read-only.
+- `plan` — turn a scan into a reviewable `cleanup_plan.json`/`.md` proposal. Removes nothing.
+- `approve` — bind a human approval to one exact plan via its canonical SHA-256 hash (24-hour expiry).
+- `clean` — remove ONLY the `SAFE` entries of one approved plan; exact-hash confirmation required; every guard (root boundary, symlink, secret, `.git`) re-checked at delete time; `--dry-run` supported; no rollback is claimed.
+- `verify` / `attest` — read-only post-clean verification and a final evidence pack separating cleaned / skipped / failed / blocked / unchanged.
+- `evidence` — opt-in mapping of a user-supplied command list to artifacts; never reads shell history; sanitized output only.
+- `docker-scan` / `docker-plan` — read-only Docker inventory via a fixed CLI whitelist and an informational plan; volumes are never proposed for deletion; no Docker mutation capability exists.
+- `html-report` — self-contained static review page (no scripts, fully escaped).
+- `demo-workspace` — synthetic try-it fixture generator (refuses non-empty targets).
 
 ## Non-goals
 
@@ -136,9 +130,9 @@ Risk classes:
 
 | Risk | Meaning |
 |---|---|
-| `SAFE` | Common generated artifact that can be proposed for deletion in a future plan engine. Not deleted in v0.1.x. |
+| `SAFE` | Common generated artifact eligible for a `PROPOSE_REMOVE` plan entry. Removed only under an approved plan. |
 | `REVIEW` | May contain user data or runtime output. User review required. |
-| `DANGEROUS` | Could affect external/system state or valuable runtime data. Not cleaned in MVP. |
+| `DANGEROUS` | Could affect external/system state or valuable runtime data. Never cleaned. |
 | `BLOCKED` | Sensitive/protected item. Must not be auto-deleted or printed as content. |
 
 ## GitHub workflow
@@ -152,17 +146,17 @@ Every pull request should keep the safety contract intact:
 
 ## Roadmap
 
-- `v0.1.0`: safe scanner + JSON/Markdown reports.
-- `v0.1.1`: GitHub CI, issue templates, package metadata cleanup.
-- `v0.1.2`: sample scan evidence + initial public backlog.
-- `v0.1.3`: largest-artifact report summary + JSON schema validation tests.
-- `v0.2.0`: cleanup plan engine, still no deletion.
-- `v0.3.0`: repo-local SAFE clean only, approval-gated.
-- `v0.4.0`: post-clean verification and attestation.
-- `v0.5.0`: explicit opt-in command evidence mapping.
-- `v0.6.0`: Docker scan/plan, no volume deletion.
-- `v1.0.0`: stable CLI, schema, safety docs, validation evidence.
+- `v0.1.x` — safe scanner, reports, CI, sample evidence, path-guard hardening. DONE.
+- `v0.2.x` — cleanup plan engine (schema, approval-token design, PLAN_ONLY plan command). DONE.
+- `v0.3.x` — approval-gated SAFE clean with dry-run and recovery reporting. DONE.
+- `v0.4.x` — post-clean verification and attestation. DONE.
+- `v0.5.x` — explicit opt-in command evidence mapping. DONE.
+- `v0.6.x` — Docker read-only scan and informational plan, no volume deletion. DONE.
+- `v0.7.x` — HTML report, demo workspace, reproducible benchmark. DONE.
+- `v0.8.x` — version alignment and pre-release packaging readiness. IN PROGRESS.
+- `v0.9.x` — public beta stabilization and safety audit.
+- `v1.0.0` — stable CLI, schemas, safety docs, validation evidence.
 
 ## Status
 
-Early alpha. Read-only scanner. No production cleanup claim.
+Pre-release (v0.8.0). The full SCAN → PLAN → APPROVE → CLEAN → VERIFY → ATTEST pipeline is implemented and CI-tested. Removal remains approval-gated with no rollback claim. Not yet published to PyPI.
