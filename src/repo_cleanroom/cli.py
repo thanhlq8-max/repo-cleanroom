@@ -12,6 +12,7 @@ from typing import Any
 from repo_cleanroom.cleaner.approval import ApprovalError, build_approval_token, verify_approval_token
 from repo_cleanroom.cleaner.clean_report import write_clean_report
 from repo_cleanroom.cleaner.executor import execute_clean
+from repo_cleanroom.evidence.importer import EvidenceError, build_evidence_payload, render_evidence_map
 from repo_cleanroom.models import SCHEMA_VERSION
 from repo_cleanroom.planners.plan_builder import PlanBuildError, build_plan_payload
 from repo_cleanroom.planners.plan_hash import PlanHashError, compute_plan_hash, load_plan_file
@@ -373,6 +374,35 @@ def run_attest(args: argparse.Namespace) -> int:
         return 1
 
 
+def run_evidence(args: argparse.Namespace) -> int:
+    """Run the evidence command: map explicit user-supplied evidence to artifacts."""
+
+    try:
+        payload = build_evidence_payload(args.evidence_file, args.scan_artifacts)
+
+        out_dir = Path(args.out_dir).expanduser()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        write_json(out_dir / "command_evidence.json", payload)
+        (out_dir / "evidence_map.md").write_text(render_evidence_map(payload), encoding="utf-8")
+
+        summary = payload["summary"]
+        print("STATUS: EVIDENCE_MAPPING_COMPLETE")
+        print(f"OUT_DIR: {out_dir}")
+        print(f"EVIDENCE_LINES: {summary['evidence_lines']}")
+        print(f"CLASSIFIED: {summary['classified_lines']}")
+        print(f"UNCLASSIFIED: {summary['unclassified_lines']}")
+        print(f"ARTIFACTS_WITH_EVIDENCE: {summary['artifacts_with_evidence']}")
+        print("SHELL_HISTORY_READ: NO")
+        print("EVIDENCE_EXECUTED: NO")
+        return 0
+    except EvidenceError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"ERROR: {exc.__class__.__name__}: {exc}", file=sys.stderr)
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI argument parser."""
 
@@ -491,6 +521,27 @@ def build_parser() -> argparse.ArgumentParser:
         help="directory where attestation.json and final_report.md will be written",
     )
     attest.set_defaults(func=run_attest)
+
+    evidence = subparsers.add_parser(
+        "evidence",
+        help="map an explicitly supplied command-evidence file to detected artifacts; never reads shell history",
+    )
+    evidence.add_argument(
+        "--evidence-file",
+        required=True,
+        help="user-assembled plain-text evidence file; the only way evidence enters the tool",
+    )
+    evidence.add_argument(
+        "--scan-artifacts",
+        required=True,
+        help="path to an artifact_inventory.json produced by the scan command",
+    )
+    evidence.add_argument(
+        "--out-dir",
+        required=True,
+        help="directory where command_evidence.json and evidence_map.md will be written",
+    )
+    evidence.set_defaults(func=run_evidence)
 
     return parser
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.5.1
+
+- Added the `evidence` command: maps an explicitly supplied plain-text evidence file to detected artifacts; writes `command_evidence.json` and `evidence_map.md`.
+- Evidence enters only via required `--evidence-file`; there is no code path that locates or reads shell history, and no evidence line is ever executed.
+- Every persisted line passes the sanitizer (credential URLs, sensitive flags/assignments, token-shaped strings, protected filenames) per `docs/COMMAND_EVIDENCE_PRIVACY.md`; tests assert raw secrets never reach the outputs.
+- Keyword classification maps commands (npm/pip/venv/pytest/cargo/build tools) to the artifact types they plausibly produced; evidence never changes risk classification.
+- Mapping is informational only and touches no workspace file (tested by snapshot).
+
 ## v0.5.0
 
 - Added `docs/COMMAND_EVIDENCE_PRIVACY.md`: privacy contract for command evidence — no default shell-history access ever, explicit `--evidence-file` input only, no execution of evidence lines, mandatory sanitization (credential URLs, sensitive flag values, token-shaped strings, protected filenames) before anything is persisted, local-only outputs.
