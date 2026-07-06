@@ -94,7 +94,7 @@ repo-cleanroom clean --root F:\GitHub --plan .cleanroom\cleanup_plan.json --toke
 
 - Only `SAFE` entries proposed by the exact approved plan are removed; `REVIEW`, `DANGEROUS`, and `BLOCKED` items are never touched.
 - Any change to the plan invalidates the approval. Tokens expire after 24 hours.
-- Every guard (root boundary, symlink, secret, `.git`) is re-checked at delete time.
+- Every guard (root boundary, symlink/junction, secret, `.git`) is re-checked at delete time.
 - There is no rollback. Always run `--dry-run` first.
 
 ## Sample scan evidence
