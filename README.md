@@ -160,3 +160,5 @@ Every pull request should keep the safety contract intact:
 ## Status
 
 Pre-release (v0.8.0). The full SCAN → PLAN → APPROVE → CLEAN → VERIFY → ATTEST pipeline is implemented and CI-tested. Removal remains approval-gated with no rollback claim. Not yet published to PyPI.
+
+Machine-readable output compatibility is documented in [`docs/SCHEMA_STABILITY.md`](docs/SCHEMA_STABILITY.md).

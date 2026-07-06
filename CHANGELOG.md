@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.9.0
+
+- Public beta documentation round: `docs/ROADMAP.md` rewritten with per-milestone
+  status (v0.1.x–v0.7.x DONE, v0.8.x/v0.9.x in progress, v1.0.0 criteria, permanent
+  out-of-scope list).
+- Added `docs/SCHEMA_STABILITY.md`: every machine-readable output with its schema
+  version field and current value, additive-only compatibility promise until v1.0.0,
+  schema freeze at v1.0.0, and the enum contracts (risk classes, plan actions,
+  action-log decisions).
+- Added an issue triage process to `CONTRIBUTING.md`: safety reports first, then bugs,
+  then feature requests; destructive-capability proposals require a dedicated safety
+  review issue.
+- Documentation only; no behavior or schema change.
+
 ## v0.8.0
 
 - Version alignment (explicit maintainer release task, 2026-07-05): `pyproject.toml` version bumped from `0.1.0` to `0.8.0`, aligning the package track with the milestone track per `docs/RELEASE_POLICY.md`.
