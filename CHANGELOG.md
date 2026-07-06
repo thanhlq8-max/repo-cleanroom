@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.9.2
+
+- Added `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1); reports route through the
+  `SECURITY.md` contact channel.
+- Roadmap refreshed: v0.9.0/v0.9.1 marked DONE, v0.9.2 community readiness scope
+  documented; the feedback loop stays open with triage per `CONTRIBUTING.md`.
+- Documentation only; no behavior or schema change.
+
 ## v0.9.1
 
 - **Safety fix (audit finding)**: Windows junctions and mount points were not treated
