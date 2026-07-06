@@ -1,5 +1,31 @@
 # Changelog
 
+## v1.0.0
+
+Stable release (explicit maintainer release command, 2026-07-06). No functional change
+from v0.9.2; this release aligns the package track with the completed roadmap.
+
+- `pyproject.toml` version `0.8.0` → `1.0.0`; classifier `3 - Alpha` →
+  `5 - Production/Stable`.
+- Output schemas are now **frozen** at their current versions per
+  `docs/SCHEMA_STABILITY.md` (scan 0.1.0, plan/token 0.2.0, action log 0.3.0,
+  verify/attestation 0.4.0, evidence 0.5.0, docker 0.6.0, demo/benchmark 0.7.0).
+  Breaking changes from here require a new major schema version.
+- Docs aligned: README status, roadmap statuses, `SECURITY.md` supported status,
+  `docs/RELEASE_POLICY.md` current-state facts (policy rules unchanged).
+
+Safety contract of this release (restated per release policy §3.5):
+
+- The tool scans, plans, verifies, and attests read-only; the only mutating command is
+  `clean`, which removes solely `SAFE` entries of one byte-exact, human-approved plan,
+  re-checks every guard (root boundary, symlink/junction/reparse point, secret, `.git`,
+  filesystem boundary) at delete time, and fail-fasts on error. There is no rollback.
+- The tool does **not**: delete Docker volumes, uninstall global packages, touch
+  registry/services/PATH, read shell history, execute scanned repository content,
+  or print secret contents.
+- Tag `v1.0.0` is created on the merge commit of this PR (tag name equals package
+  version). Publishing to TestPyPI/PyPI remains a separate, explicitly-commanded step.
+
 ## v0.9.2
 
 - Added `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1); reports route through the

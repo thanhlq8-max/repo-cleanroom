@@ -8,8 +8,8 @@ Repo Cleanroom currently uses two version tracks:
 
 | Track | Where | Current value | Meaning |
 |---|---|---|---|
-| Milestone version | CHANGELOG.md, PR/branch names, project state | v0.1.x per merged PR | Process/scope increments (docs, tests, hardening) |
-| Package version | `pyproject.toml` `project.version` | `0.1.0` | The installable artifact version |
+| Milestone version | CHANGELOG.md, PR/branch names, project state | v1.0.0 | Process/scope increments (docs, tests, hardening) |
+| Package version | `pyproject.toml` `project.version` | `1.0.0` | The installable artifact version |
 
 This split is intentional during pre-release development. Milestone versions may advance
 without a package release, because most v0.1.x increments change docs, tests, or process —
@@ -36,14 +36,20 @@ A package release (TestPyPI or PyPI) requires ALL of:
 5. The safety contract restated in the release notes: current version scope
    (read-only for all v0.1.x/v0.2.x releases) and explicit list of what the tool does not do.
 
-## 4. Version number semantics (pre-1.0)
+## 4. Version number semantics
 
-- `0.MINOR.PATCH` while pre-1.0.
-- MINOR marks a capability phase boundary (per the public roadmap): 0.1 read-only scan,
-  0.2 plan design/generation without deletion, 0.3 approval-gated clean, and onward.
-- PATCH marks hardening, docs, tests, and report improvements inside a phase.
-- No version may claim a capability phase it does not implement. A version that cannot
-  delete anything must not be described as a cleanup release.
+Pre-1.0 (historical):
+
+- `0.MINOR.PATCH`: MINOR marked a capability phase boundary (0.1 read-only scan,
+  0.2 plan generation without deletion, 0.3 approval-gated clean, and onward);
+  PATCH marked hardening, docs, tests, and report improvements inside a phase.
+
+From 1.0.0 (semver):
+
+- MAJOR: breaking change to a frozen output schema or to the safety contract surface.
+- MINOR: new capability behind the existing safety gates; additive schema fields only.
+- PATCH: fixes, docs, tests, hardening. Safety fixes are always at least a PATCH release.
+- Unchanged rule: no version may claim a capability it does not implement.
 
 ## 5. Pre-release checklist (to copy into any future release PR)
 
@@ -63,6 +69,8 @@ A package release (TestPyPI or PyPI) requires ALL of:
 
 ## 6. Current state under this policy
 
-- `pyproject.toml` stays at `0.1.0` until the first intentional release task.
+- Tracks aligned at `1.0.0` (explicit release tasks: v0.8.0 on 2026-07-05,
+  v1.0.0 on 2026-07-06). Tags `v0.8.0` and `v1.0.0` mark the respective merge commits.
 - Milestone versions continue to advance via CHANGELOG.md and PR scope names.
-- No TestPyPI/PyPI publication is scheduled; it requires an explicit maintainer command.
+- No TestPyPI/PyPI publication has happened yet; each publication step still requires
+  an explicit maintainer command (§3 rule 1 is permanent).

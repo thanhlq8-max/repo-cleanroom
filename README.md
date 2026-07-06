@@ -18,7 +18,7 @@ Repo Cleanroom implements the full safety-gated workflow:
 SCAN -> PLAN -> APPROVE -> CLEAN -> VERIFY -> ATTESTATION REPORT
 ```
 
-## Capabilities (v0.8.0)
+## Capabilities (v1.0.0)
 
 - `scan` — discover Git repositories, detect manifests and common repo-local artifacts (`node_modules`, `.venv`, `__pycache__`, `.pytest_cache`, `dist`, `build`, `target`, and more), classify risk (`SAFE`/`REVIEW`/`DANGEROUS`/`BLOCKED`), estimate sizes without following symlinks, and write JSON/Markdown reports. Read-only.
 - `plan` — turn a scan into a reviewable `cleanup_plan.json`/`.md` proposal. Removes nothing.
@@ -153,12 +153,10 @@ Every pull request should keep the safety contract intact:
 - `v0.5.x` — explicit opt-in command evidence mapping. DONE.
 - `v0.6.x` — Docker read-only scan and informational plan, no volume deletion. DONE.
 - `v0.7.x` — HTML report, demo workspace, reproducible benchmark. DONE.
-- `v0.8.x` — version alignment and pre-release packaging readiness. IN PROGRESS.
-- `v0.9.x` — public beta stabilization and safety audit.
-- `v1.0.0` — stable CLI, schemas, safety docs, validation evidence.
+- `v0.8.x` — version alignment and pre-release packaging readiness. DONE.
+- `v0.9.x` — public beta stabilization and safety audit. DONE.
+- `v1.0.0` — stable CLI, frozen schemas, safety docs, validation evidence. DONE.
 
 ## Status
 
-Pre-release (v0.8.0). The full SCAN → PLAN → APPROVE → CLEAN → VERIFY → ATTEST pipeline is implemented and CI-tested. Removal remains approval-gated with no rollback claim. Not yet published to PyPI.
-
-Machine-readable output compatibility is documented in [`docs/SCHEMA_STABILITY.md`](docs/SCHEMA_STABILITY.md).
+Stable (v1.0.0). The full SCAN → PLAN → APPROVE → CLEAN → VERIFY → ATTEST pipeline is implemented and CI-tested on Python 3.11/3.12/3.13. Output schemas are frozen per [`docs/SCHEMA_STABILITY.md`](docs/SCHEMA_STABILITY.md). Removal remains approval-gated with no rollback claim. Not yet published to PyPI.
