@@ -70,12 +70,13 @@ Status legend: **DONE** (merged to `main`, CI-tested) · **IN PROGRESS** · **PL
 
 ## v0.9.x — public beta stabilization — IN PROGRESS
 
-- v0.9.0: stable CLI docs, output schema stability statement
+- v0.9.0 — DONE: stable CLI docs, output schema stability statement
   (`docs/SCHEMA_STABILITY.md`), issue triage process (`CONTRIBUTING.md`).
-- v0.9.1: safety threat model (`docs/THREAT_MODEL.md`), malicious repo fixture tests,
-  symlink/junction regression tests.
-- v0.9.2: community feedback round — triage incoming issues, accept contributor
-  proposals that keep the safety contract, refresh this roadmap.
+- v0.9.1 — DONE: safety threat model (`docs/THREAT_MODEL.md`), junction/reparse-point
+  boundary fix, malicious repo fixture tests, symlink/junction regression tests.
+- v0.9.2 — IN PROGRESS: community readiness — `CODE_OF_CONDUCT.md`, triage process
+  live per `CONTRIBUTING.md`, roadmap refreshed. The feedback loop itself stays open:
+  incoming issues are triaged against the safety contract on arrival.
 
 ## v1.0.0 — stable public release — PLANNED
 

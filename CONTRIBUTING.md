@@ -1,6 +1,6 @@
 # Contributing
 
-Repo Cleanroom is safety-critical because later versions will remove local files. Contributions must preserve the safety model.
+Repo Cleanroom is safety-critical because it can remove local files. Contributions must preserve the safety model. All community interaction follows [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
 ## Rules
 
