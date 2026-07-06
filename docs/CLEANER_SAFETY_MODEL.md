@@ -35,14 +35,17 @@ their targets, and any path outside the plan.
 For each entry, in order, before any removal:
 
 1. Path guard: resolved entry path is strictly inside resolved root.
-2. Identity check: path still exists and `is_symlink` is still false — a path that became a
-   symlink after planning is skipped as `SKIPPED_CHANGED`.
+2. Identity check: path still exists and is still not link-like — a path that became a
+   symlink **or any Windows reparse point (junction/mount point)** after planning is
+   skipped as `SKIPPED_CHANGED`.
 3. Secret guard: path/name re-classified; any protected match aborts that entry as
    `SKIPPED_PROTECTED` (defense in depth; such entries should never be in the proposal set).
 4. `.git` guard: entries containing or equal to a `.git` component are refused.
 5. Containment: removal is performed bottom-up within the entry directory only; the walker
-   must not follow symlinks (`followlinks=False` semantics) and must refuse to cross a
-   filesystem mount point inside the entry.
+   must not follow symlinks (`followlinks=False` semantics), must refuse to cross a
+   filesystem mount point inside the entry, and must refuse the whole entry when it
+   contains a non-symlink reparse point (junction/mount point) — `os.walk` alone does
+   not stop at junctions, see `docs/THREAT_MODEL.md` T2.
 
 Any guard failure on an entry skips that entry and records the reason; it never widens to
 other entries. Any unexpected exception aborts the whole run after logging.

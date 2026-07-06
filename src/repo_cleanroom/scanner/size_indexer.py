@@ -5,17 +5,20 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from repo_cleanroom.safety.symlink_guard import is_link_like
+
 
 def estimate_path_size(path: str | Path) -> tuple[int, int, list[str]]:
-    """Estimate size and file count without following symlinks.
+    """Estimate size and file count without following symlinks or junctions.
 
-    Returns (size_bytes, file_count, errors).
+    Returns (size_bytes, file_count, errors). `os.walk(followlinks=False)` still
+    descends into Windows junctions, so link-like directories are pruned explicitly.
     """
 
     candidate = Path(path)
     errors: list[str] = []
 
-    if candidate.is_symlink():
+    if is_link_like(candidate):
         return 0, 0, ["SYMLINK_NOT_TRAVERSED"]
 
     if candidate.is_file():
@@ -35,7 +38,7 @@ def estimate_path_size(path: str | Path) -> tuple[int, int, list[str]]:
         kept_dirs = []
         for dirname in dirnames:
             child_dir = current_path / dirname
-            if child_dir.is_symlink():
+            if is_link_like(child_dir):
                 errors.append(f"SYMLINK_DIR_SKIPPED:{child_dir.name}")
                 continue
             kept_dirs.append(dirname)
@@ -43,7 +46,7 @@ def estimate_path_size(path: str | Path) -> tuple[int, int, list[str]]:
 
         for filename in filenames:
             child = current_path / filename
-            if child.is_symlink():
+            if is_link_like(child):
                 errors.append(f"SYMLINK_FILE_SKIPPED:{child.name}")
                 continue
             try:

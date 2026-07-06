@@ -14,6 +14,7 @@ from typing import Any
 
 from repo_cleanroom.safety.path_guard import PathGuardError, ensure_within_root
 from repo_cleanroom.safety.secret_guard import is_protected_path
+from repo_cleanroom.safety.symlink_guard import is_link_like, is_reparse_point
 
 # Action-log decisions. NOT_PROPOSED and NOT_PROCESSED extend the design list so the
 # log can keep one record per plan entry (design section 4) even for entries the
@@ -56,6 +57,17 @@ def _inspect_entry_tree(entry_path: Path) -> tuple[int, int, str | None]:
         for name in list(dirs) + list(files):
             if is_protected_path(name):
                 return size_bytes, file_count, "protected name inside entry"
+        # os.walk(followlinks=False) still descends into Windows junctions/mount
+        # points; a junction planted inside a SAFE entry could redirect the removal
+        # outside the root. Refuse the whole entry — fail-safe, nothing removed.
+        for name in list(dirs):
+            child_dir = current_path / name
+            if not child_dir.is_symlink() and is_reparse_point(child_dir):
+                return (
+                    size_bytes,
+                    file_count,
+                    "entry contains a non-symlink reparse point (junction/mount point)",
+                )
         for name in files:
             child = current_path / name
             file_count += 1
@@ -80,19 +92,40 @@ def _remove_dir_or_link(path: Path) -> None:
 
 
 def _remove_entry_tree(entry_path: Path) -> None:
-    """Bottom-up removal without following symlinks."""
+    """Bottom-up removal without following symlinks or junctions.
+
+    Walks top-down so link-like directories can be pruned before os.walk descends
+    into them (os.walk(followlinks=False) does not stop at Windows junctions).
+    Symlinked directories are removed as links; non-symlink reparse points abort
+    the removal — defense in depth on top of the pre-removal inspection.
+    """
 
     if entry_path.is_file() or entry_path.is_symlink():
         entry_path.unlink()
         return
+    if is_reparse_point(entry_path):
+        raise OSError(f"refusing to remove non-symlink reparse point: {entry_path}")
 
-    for current, dirs, files in os.walk(entry_path, topdown=False, followlinks=False):
+    directories: list[Path] = []
+    for current, dirs, files in os.walk(entry_path, topdown=True, followlinks=False):
         current_path = Path(current)
+        kept_dirs = []
+        for name in dirs:
+            child = current_path / name
+            if child.is_symlink():
+                _remove_dir_or_link(child)
+                continue
+            if is_reparse_point(child):
+                raise OSError(f"refusing to remove non-symlink reparse point: {child}")
+            kept_dirs.append(name)
+            directories.append(child)
+        dirs[:] = kept_dirs
         for name in files:
             child = current_path / name
             child.unlink()
-        for name in dirs:
-            _remove_dir_or_link(current_path / name)
+
+    for directory in reversed(directories):
+        directory.rmdir()
     entry_path.rmdir()
 
 
@@ -103,8 +136,8 @@ def _guard_entry(entry: dict[str, Any], root: Path) -> tuple[str | None, str | N
         return DECISION_SKIPPED_GUARD_FAIL, "entry is not a non-symlink SAFE artifact"
 
     entry_path = Path(entry["path"])
-    if entry_path.is_symlink():
-        return DECISION_SKIPPED_CHANGED, "path became a symlink after planning"
+    if is_link_like(entry_path):
+        return DECISION_SKIPPED_CHANGED, "path became a symlink or reparse point after planning"
     if not entry_path.exists():
         return DECISION_SKIPPED_CHANGED, "path no longer exists"
 

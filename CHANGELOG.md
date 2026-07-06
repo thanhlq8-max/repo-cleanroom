@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.9.1
+
+- **Safety fix (audit finding)**: Windows junctions and mount points were not treated
+  as link boundaries — `Path.is_symlink()` reports them as False on all supported
+  Python versions and `os.walk(followlinks=False)` descends into them. A junction
+  planted inside an approved SAFE entry could have redirected removal outside the
+  root (a same-volume junction also bypasses the `st_dev` mount check). Confirmed
+  empirically on Python 3.11 and 3.13 before the fix.
+- New `is_reparse_point()` / `is_link_like()` in `safety/symlink_guard.py` (lstat
+  `FILE_ATTRIBUTE_REPARSE_POINT`; POSIX unaffected). Scan now reports junction
+  artifacts as link-like with size 0 and never traverses them; clean refuses any
+  entry containing a non-symlink reparse point (`SKIPPED_GUARD_FAIL`, fail-safe) and
+  the removal walk prunes link-like directories with a defense-in-depth abort.
+- Added `docs/THREAT_MODEL.md`: adversary model (scanned repo = untrusted input),
+  threat/mitigation/test matrix (T1–T10), the junction audit finding, residual risks.
+- Added `tests/test_safety_audit.py`: junction escape containment for size
+  estimation, junction artifact flagging, junction planted inside an approved entry,
+  entry replaced by a junction, hostile-name scan survival, and a secret-content
+  marker sweep across all scan outputs.
+- `docs/CLEANER_SAFETY_MODEL.md` and README guard wording aligned (symlink/junction).
+
 ## v0.9.0
 
 - Public beta documentation round: `docs/ROADMAP.md` rewritten with per-milestone
