@@ -60,35 +60,38 @@ Status legend: **DONE** (merged to `main`, CI-tested) · **IN PROGRESS** · **PL
 - `demo-workspace`: synthetic try-it workspace, refuses non-empty target directories;
 - reproducible scan/plan benchmark with measured results (`docs/PERFORMANCE.md`).
 
-## v0.8.x — packaging and release readiness — IN PROGRESS
+## v0.8.x — packaging and release readiness — DONE
 
 - v0.8.0 — DONE: package version aligned to the milestone track (`pyproject.toml` 0.8.0),
   stale wording aligned with actual capabilities, release policy checklist
   (`docs/RELEASE_POLICY.md`).
-- v0.8.1 — PLANNED: TestPyPI dry run (explicit maintainer command required).
-- v0.8.2 — PLANNED: PyPI candidate (explicit maintainer command required).
+- TestPyPI / PyPI publication is tracked post-1.0 (explicit maintainer command
+  required for each step; see `docs/RELEASE_POLICY.md` §3).
 
-## v0.9.x — public beta stabilization — IN PROGRESS
+## v0.9.x — public beta stabilization — DONE
 
 - v0.9.0 — DONE: stable CLI docs, output schema stability statement
   (`docs/SCHEMA_STABILITY.md`), issue triage process (`CONTRIBUTING.md`).
 - v0.9.1 — DONE: safety threat model (`docs/THREAT_MODEL.md`), junction/reparse-point
   boundary fix, malicious repo fixture tests, symlink/junction regression tests.
-- v0.9.2 — IN PROGRESS: community readiness — `CODE_OF_CONDUCT.md`, triage process
+- v0.9.2 — DONE: community readiness — `CODE_OF_CONDUCT.md`, triage process
   live per `CONTRIBUTING.md`, roadmap refreshed. The feedback loop itself stays open:
   incoming issues are triaged against the safety contract on arrival.
 
-## v1.0.0 — stable public release — PLANNED
+## v1.0.0 — stable public release — DONE
 
-Required before tagging v1.0.0:
+All release criteria met:
 
-- stable schemas (frozen at their v0.9.x values; additive-only afterwards);
+- stable schemas — **frozen** at their shipped values (`docs/SCHEMA_STABILITY.md`);
 - documented safety model, threat model, and privacy contract;
 - Windows-first validation evidence (quickstart transcripts, CI green on
   Python 3.11/3.12/3.13);
 - public examples for scan and plan outputs;
 - no destructive defaults: removal only behind plan + exact-plan approval token,
   volumes/global packages/registry/services never touched.
+
+Post-1.0: PyPI publication (explicit maintainer command per step), then maintenance —
+safety reports first, additive improvements behind the same gates.
 
 ## Permanently out of scope
 

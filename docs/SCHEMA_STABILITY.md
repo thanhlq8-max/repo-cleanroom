@@ -1,16 +1,17 @@
 # Output Schema Stability
 
-Status: public beta (v0.9.0). This document declares which machine-readable outputs
-exist, the schema version each one carries, and what stability consumers can rely on.
+Status: stable (v1.0.0) — the schema versions below are **frozen**. This document
+declares which machine-readable outputs exist, the schema version each one carries,
+and what stability consumers can rely on.
 
 ## Stability promise
 
 - Every JSON output embeds its own schema version field (table below). Consumers should
   dispatch on that field, not on the package version.
-- From v0.9.0 until v1.0.0: schema changes are **additive only** (new optional fields).
-  No field is renamed, removed, or re-typed; no enum value changes meaning.
-- At v1.0.0 the schema versions below are frozen. Any breaking change afterwards
-  requires a new major schema version and a changelog entry.
+- Since v1.0.0 the schema versions below are frozen: changes are additive only
+  (new optional fields). No field is renamed, removed, or re-typed; no enum value
+  changes meaning. Any breaking change requires a new major schema version and a
+  changelog entry.
 - Enum contracts that never change within a major version:
   - risk classes: `SAFE`, `REVIEW`, `DANGEROUS`, `BLOCKED`;
   - plan actions: `PROPOSE_REMOVE`, `REVIEW_REQUIRED`, `NO_ACTION`, `FORBIDDEN`;
