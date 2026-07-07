@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Added `.github/workflows/publish.yml`: TestPyPI/PyPI publishing via PyPI Trusted
+  Publishing (OIDC) — no API tokens stored. Manual `workflow_dispatch`
+  (`target: testpypi | pypi`) for the policy-mandated TestPyPI-first flow, plus
+  automatic PyPI publish on a published GitHub Release. Build job runs
+  `twine check` on every distribution.
+- Added `docs/PUBLISHING.md`: step-by-step trusted-publisher setup for each index
+  and a manual `twine` fallback; distribution-surface notes.
+- CI/docs only; no package behavior or schema change.
+
 ## v1.0.0
 
 Stable release (explicit maintainer release command, 2026-07-06). No functional change
