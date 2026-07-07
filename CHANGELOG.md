@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Cross-platform CI: the test matrix now runs on Ubuntu and macOS in addition to
+  Windows (Ubuntu × 3.11/3.12/3.13, Windows × 3.11/3.12/3.13, macOS × 3.13). This
+  actually executes the symlink safety tests, which skip on Windows without symlink
+  privilege — the POSIX guard path is now validated in CI, backing the
+  `Operating System :: POSIX` classifier. Workflow commands use `python` (the `py`
+  launcher is Windows-only).
 - Broadened artifact detection (additive, no schema change; new `artifact_type` values
   and manifest ecosystems, risk classes unchanged):
   - New SAFE regenerable dirs: `.output`, `.svelte-kit`, `.astro`, `.turbo`,
