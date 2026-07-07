@@ -36,15 +36,20 @@ from repo_cleanroom.verifier.verify import VerifyError, build_verify_payload, sh
 from repo_cleanroom.scanner.artifact_detector import detect_artifacts
 from repo_cleanroom.scanner.manifest_detector import detect_manifests
 from repo_cleanroom.scanner.repo_discovery import discover_repositories
+from repo_cleanroom.scanner.scan_config import EMPTY_CONFIG, ScanConfig, ScanConfigError, load_scan_config
 
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-def build_scan_payload(root: str | Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+def build_scan_payload(
+    root: str | Path, config: ScanConfig | None = None
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     """Run read-only scan and return inventory/report payloads."""
 
+    scan_config = config or EMPTY_CONFIG
+    config_summary = scan_config.as_summary()
     resolved_root = resolve_existing_directory(root)
     repos = discover_repositories(resolved_root)
 
@@ -56,7 +61,9 @@ def build_scan_payload(root: str | Path) -> tuple[dict[str, Any], dict[str, Any]
         repo_manifests = detect_manifests(repo.path)
         manifests.extend(repo_manifests)
 
-        repo_artifacts = detect_artifacts(repo.path, repo_manifests, root=resolved_root)
+        repo_artifacts = detect_artifacts(
+            repo.path, repo_manifests, root=resolved_root, config=scan_config
+        )
         for artifact in repo_artifacts:
             data = artifact.to_dict()
             data["repo_name"] = repo.name
@@ -74,6 +81,7 @@ def build_scan_payload(root: str | Path) -> tuple[dict[str, Any], dict[str, Any]
         "mode": "READ_ONLY_SCAN",
         "generated_at_utc": _utc_now(),
         "root": str(resolved_root),
+        "scan_config": config_summary,
         "repos": [repo.to_dict() for repo in repos],
         "manifests": manifest_dicts,
         "totals": {
@@ -93,6 +101,7 @@ def build_scan_payload(root: str | Path) -> tuple[dict[str, Any], dict[str, Any]
         "mode": "READ_ONLY_SCAN",
         "generated_at_utc": _utc_now(),
         "root": str(resolved_root),
+        "scan_config": config_summary,
         "artifacts": artifacts,
         "totals": {
             "artifacts": len(artifacts),
@@ -129,10 +138,12 @@ def run_scan(args: argparse.Namespace) -> int:
     """Run the scan command."""
 
     try:
+        config = load_scan_config(args.config) if args.config else EMPTY_CONFIG
+
         out_dir = Path(args.out_dir).expanduser()
         out_dir.mkdir(parents=True, exist_ok=True)
 
-        inventory, artifact_inventory, public_safety = build_scan_payload(args.root)
+        inventory, artifact_inventory, public_safety = build_scan_payload(args.root, config)
         schema_payload = {
             "schema_version": SCHEMA_VERSION,
             "tool": "repo-cleanroom",
@@ -156,9 +167,16 @@ def run_scan(args: argparse.Namespace) -> int:
         print(f"REPOS_SCANNED: {repos}")
         print(f"ARTIFACTS_FOUND: {artifacts}")
         print(f"ESTIMATED_ARTIFACT_BYTES: {size_bytes}")
+        if args.config:
+            applied = inventory["scan_config"]
+            print(
+                f"CONFIG_APPLIED: {args.config} "
+                f"(ignore={len(applied['ignore'])}, "
+                f"extra_names={len(applied['extra_artifact_names'])})"
+            )
         print("CLEANUP_PERFORMED: NO")
         return 0
-    except PathGuardError as exc:
+    except (PathGuardError, ScanConfigError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
     except OSError as exc:
@@ -533,6 +551,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--out-dir",
         required=True,
         help="directory where scan reports will be written; required by policy",
+    )
+    scan.add_argument(
+        "--config",
+        default=None,
+        help="optional TOML config: ignore globs and extra artifact names (see docs/CONFIG.md)",
     )
     scan.set_defaults(func=run_scan)
 

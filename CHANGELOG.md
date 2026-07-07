@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Optional scan configuration (`scan --config <file.toml>`, `docs/CONFIG.md`):
+  - `ignore` — fnmatch globs (matched against the repo-relative POSIX path and the
+    basename) exclude paths; ignored directories are pruned.
+  - `extra_artifact_names` — additional names to detect; classified by the normal
+    risk policy, so unknown names become REVIEW, never auto-SAFE.
+  - Config can only narrow the scan (ignore) or flag more as REVIEW (extra names) —
+    it can never widen what the tool would propose for removal.
+  - The applied config is recorded under a new additive `scan_config` field in
+    `inventory.json` / `artifact_inventory.json` for provenance (scan schema
+    version unchanged; the field is optional/additive). Never auto-discovered.
 - Nested / monorepo artifact detection: `scan` now finds artifacts in subdirectories
   (e.g. `packages/*/node_modules`, `apps/web/.next`, a nested `dist`/`target`), not
   just the repo root. The walk never follows symlinks or junctions, skips VCS
