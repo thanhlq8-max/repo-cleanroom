@@ -9,6 +9,10 @@
   `twine check` on every distribution.
 - Added `docs/PUBLISHING.md`: step-by-step trusted-publisher setup for each index
   and a manual `twine` fallback; distribution-surface notes.
+- Removed the auto-generated `python-publish.yml` (duplicate of `publish.yml`; both
+  triggered on `release: published`, which would double-publish) and `static.yml`
+  (deployed the entire repo root to GitHub Pages on every push — no site content for
+  a CLI tool). `publish.yml` is the single publishing workflow.
 - CI/docs only; no package behavior or schema change.
 
 ## v1.0.0
