@@ -19,6 +19,50 @@ def test_detect_artifacts_classifies_safe_and_blocked(tmp_path: Path):
     assert by_name[".env"].size_bytes > 0
 
 
+def test_detect_artifacts_covers_additional_ecosystems(tmp_path: Path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    # Regenerable build/cache/dependency dirs across ecosystems -> SAFE.
+    safe_dirs = [
+        ".gradle",
+        ".dart_tool",
+        ".turbo",
+        ".svelte-kit",
+        ".angular",
+        "__pypackages__",
+        ".hypothesis",
+        ".ipynb_checkpoints",
+        ".eggs",
+    ]
+    for name in safe_dirs:
+        artifact = repo / name
+        artifact.mkdir()
+        (artifact / "generated.bin").write_bytes(b"x" * 8)
+
+    records = detect_artifacts(repo, root=tmp_path)
+    by_name = {Path(record.path).name: record for record in records}
+
+    for name in safe_dirs:
+        assert name in by_name, f"{name} should be detected"
+        assert by_name[name].risk == "SAFE", f"{name} should classify SAFE"
+        assert by_name[name].size_bytes > 0
+        assert by_name[name].artifact_type
+
+
+def test_detect_artifacts_runtime_dirs_stay_review(tmp_path: Path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    for name in ("data", "outputs", "logs"):
+        (repo / name).mkdir()
+
+    records = detect_artifacts(repo, root=tmp_path)
+    by_name = {Path(record.path).name: record for record in records}
+
+    # Runtime data must never be promoted to SAFE by the coverage expansion.
+    for name in ("data", "outputs", "logs"):
+        assert by_name[name].risk == "REVIEW"
+
+
 def test_detect_artifacts_does_not_traverse_symlink(tmp_path: Path):
     repo = tmp_path / "repo"
     outside = tmp_path / "outside"

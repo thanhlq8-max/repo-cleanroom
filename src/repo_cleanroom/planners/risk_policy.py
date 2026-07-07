@@ -9,23 +9,42 @@ from pathlib import Path
 
 from repo_cleanroom.safety.secret_guard import protected_reason
 
+# Regenerable dependency, build-output, and cache directories. SAFE means "eligible
+# for a PROPOSE_REMOVE plan entry", never "auto-delete" — removal still requires an
+# approved plan. Additive per docs/SCHEMA_STABILITY.md; risk classes do not change.
 SAFE_ARTIFACT_NAMES = {
+    # Node / JS
     "node_modules",
+    ".next",
+    ".nuxt",
+    ".output",
+    ".svelte-kit",
+    ".astro",
+    ".turbo",
+    ".parcel-cache",
+    ".angular",
+    # Python
     ".venv",
     "venv",
+    "__pypackages__",
     "__pycache__",
     ".pytest_cache",
     ".mypy_cache",
     ".ruff_cache",
+    ".hypothesis",
+    ".ipynb_checkpoints",
+    ".eggs",
     ".tox",
     ".nox",
+    # Generic build / coverage
     "dist",
     "build",
     "coverage",
     ".coverage",
-    ".next",
-    ".nuxt",
+    # Rust / JVM / .NET / Dart
     "target",
+    ".gradle",
+    ".dart_tool",
     "bin",
     "obj",
 }
