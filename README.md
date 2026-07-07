@@ -159,4 +159,4 @@ Every pull request should keep the safety contract intact:
 
 ## Status
 
-Stable (v1.0.0). The full SCAN → PLAN → APPROVE → CLEAN → VERIFY → ATTEST pipeline is implemented and CI-tested on Python 3.11/3.12/3.13. Output schemas are frozen per [`docs/SCHEMA_STABILITY.md`](docs/SCHEMA_STABILITY.md). Removal remains approval-gated with no rollback claim. Not yet published to PyPI.
+Stable (v1.0.0). The full SCAN → PLAN → APPROVE → CLEAN → VERIFY → ATTEST pipeline is implemented and CI-tested on Windows, Linux, and macOS across Python 3.11/3.12/3.13. Output schemas are frozen per [`docs/SCHEMA_STABILITY.md`](docs/SCHEMA_STABILITY.md). Removal remains approval-gated with no rollback claim. Not yet published to PyPI.
