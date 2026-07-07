@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Broadened artifact detection (additive, no schema change; new `artifact_type` values
+  and manifest ecosystems, risk classes unchanged):
+  - New SAFE regenerable dirs: `.output`, `.svelte-kit`, `.astro`, `.turbo`,
+    `.parcel-cache`, `.angular` (Node); `__pypackages__`, `.hypothesis`,
+    `.ipynb_checkpoints`, `.eggs` (Python); `.gradle` (JVM); `.dart_tool` (Dart).
+  - New manifest ecosystems detected: Java/Maven (`pom.xml`), Gradle
+    (`build.gradle[.kts]`, `settings.gradle[.kts]`), PHP (`composer.json/lock`),
+    Ruby (`Gemfile[.lock]`), Dart (`pubspec.yaml/lock`), Deno (`deno.json[c]`),
+    Bun lockfile (`bun.lockb`).
+  - Ambiguous names that may hold committed or user data (`vendor`, `packages`,
+    `.terraform`) are intentionally excluded; runtime dirs (`data`, `outputs`,
+    `logs`, …) remain REVIEW, never promoted to SAFE.
 - Added `.github/workflows/publish.yml`: TestPyPI/PyPI publishing via PyPI Trusted
   Publishing (OIDC) — no API tokens stored. Manual `workflow_dispatch`
   (`target: testpypi | pypi`) for the policy-mandated TestPyPI-first flow, plus
