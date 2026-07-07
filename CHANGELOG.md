@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Nested / monorepo artifact detection: `scan` now finds artifacts in subdirectories
+  (e.g. `packages/*/node_modules`, `apps/web/.next`, a nested `dist`/`target`), not
+  just the repo root. The walk never follows symlinks or junctions, skips VCS
+  internals (`.git`/`.hg`/`.svn`), never descends into a detected artifact (so nested
+  `node_modules` inside `node_modules` is reported once), and is depth-bounded
+  (`DEFAULT_MAX_DEPTH = 8`). `artifact_inventory.json` `relative_path` is now the
+  POSIX path from the repo root; top-level artifacts keep their bare name, so existing
+  consumers are unaffected. A nested `.env`/secret is still classified BLOCKED
+  wherever it lives. Additive; no schema field or enum change.
 - Cross-platform CI: the test matrix now runs on Ubuntu and macOS in addition to
   Windows (Ubuntu × 3.11/3.12/3.13, Windows × 3.11/3.12/3.13, macOS × 3.13). This
   actually executes the symlink safety tests, which skip on Windows without symlink
