@@ -72,5 +72,8 @@ From 1.0.0 (semver):
 - Tracks aligned at `1.0.0` (explicit release tasks: v0.8.0 on 2026-07-05,
   v1.0.0 on 2026-07-06). Tags `v0.8.0` and `v1.0.0` mark the respective merge commits.
 - Milestone versions continue to advance via CHANGELOG.md and PR scope names.
-- No TestPyPI/PyPI publication has happened yet; each publication step still requires
-  an explicit maintainer command (§3 rule 1 is permanent).
+- Each publication step still requires an explicit maintainer command (§3 rule 1 is
+  permanent). Mechanics are documented in `docs/PUBLISHING.md`; the
+  `.github/workflows/publish.yml` workflow is the recommended path (TestPyPI dry run
+  first via manual dispatch, then PyPI). Running that workflow, or cutting a GitHub
+  Release, is the explicit maintainer action — the workflow never triggers itself.
