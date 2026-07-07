@@ -63,6 +63,55 @@ def test_detect_artifacts_runtime_dirs_stay_review(tmp_path: Path):
         assert by_name[name].risk == "REVIEW"
 
 
+def test_detect_artifacts_finds_nested_monorepo_artifacts(tmp_path: Path):
+    repo = tmp_path / "repo"
+    # Monorepo layout: artifacts nested under packages/ and apps/.
+    (repo / "packages" / "app-a" / "node_modules" / "dep").mkdir(parents=True)
+    (repo / "packages" / "app-a" / "node_modules" / "dep" / "i.js").write_text("x", encoding="utf-8")
+    (repo / "packages" / "app-b" / "dist").mkdir(parents=True)
+    (repo / "packages" / "app-b" / "dist" / "b.js").write_text("y", encoding="utf-8")
+    (repo / "apps" / "web" / ".next").mkdir(parents=True)
+    # A nested secret must still be flagged BLOCKED wherever it lives.
+    (repo / "packages" / "app-a" / ".env").write_text("K=synthetic", encoding="utf-8")
+    # Plain source dirs are not artifacts.
+    (repo / "packages" / "app-a" / "src").mkdir(parents=True)
+
+    records = detect_artifacts(repo, root=tmp_path)
+    by_rel = {record.relative_path: record for record in records}
+
+    assert "packages/app-a/node_modules" in by_rel
+    assert by_rel["packages/app-a/node_modules"].risk == "SAFE"
+    assert "packages/app-b/dist" in by_rel
+    assert "apps/web/.next" in by_rel
+    assert by_rel["packages/app-a/.env"].risk == "BLOCKED"
+    assert "packages/app-a/src" not in by_rel
+
+
+def test_detect_artifacts_does_not_descend_into_detected_artifact(tmp_path: Path):
+    repo = tmp_path / "repo"
+    # Classic nested node_modules; the inner one must not be reported separately.
+    inner = repo / "node_modules" / "pkg" / "node_modules"
+    inner.mkdir(parents=True)
+    (inner / "x.js").write_text("x", encoding="utf-8")
+
+    records = detect_artifacts(repo, root=tmp_path)
+    rels = [record.relative_path for record in records]
+
+    assert rels == ["node_modules"], "must record only the outermost node_modules"
+
+
+def test_detect_artifacts_respects_max_depth(tmp_path: Path):
+    repo = tmp_path / "repo"
+    (repo / "a" / "b" / "node_modules").mkdir(parents=True)
+
+    shallow = detect_artifacts(repo, root=tmp_path, max_depth=8)
+    assert any(r.relative_path == "a/b/node_modules" for r in shallow)
+
+    # With max_depth=2 the walk stops before reaching a/b, so nothing is found.
+    capped = detect_artifacts(repo, root=tmp_path, max_depth=2)
+    assert capped == []
+
+
 def test_detect_artifacts_does_not_traverse_symlink(tmp_path: Path):
     repo = tmp_path / "repo"
     outside = tmp_path / "outside"
