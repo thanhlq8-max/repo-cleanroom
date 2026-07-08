@@ -18,9 +18,9 @@ Repo Cleanroom implements the full safety-gated workflow:
 SCAN -> PLAN -> APPROVE -> CLEAN -> VERIFY -> ATTESTATION REPORT
 ```
 
-## Capabilities (v1.0.0)
+## Capabilities (v1.1.0)
 
-- `scan` — discover Git repositories, detect manifests and common repo-local artifacts (`node_modules`, `.venv`, `__pycache__`, `.pytest_cache`, `dist`, `build`, `target`, and more), classify risk (`SAFE`/`REVIEW`/`DANGEROUS`/`BLOCKED`), estimate sizes without following symlinks, and write JSON/Markdown reports. Read-only.
+- `scan` — discover Git repositories, detect manifests and common repo-local artifacts (`node_modules`, `.venv`, `__pycache__`, `.pytest_cache`, nested monorepo artifacts, `dist`, `build`, `target`, and more), classify risk (`SAFE`/`REVIEW`/`DANGEROUS`/`BLOCKED`), estimate sizes without following symlinks, and write JSON/Markdown reports. Optional explicit scan config (`--config`) can ignore paths or add REVIEW-only custom artifact names. Read-only.
 - `plan` — turn a scan into a reviewable `cleanup_plan.json`/`.md` proposal. Removes nothing.
 - `approve` — bind a human approval to one exact plan via its canonical SHA-256 hash (24-hour expiry).
 - `clean` — remove ONLY the `SAFE` entries of one approved plan; exact-hash confirmation required; every guard (root boundary, symlink, secret, `.git`) re-checked at delete time; `--dry-run` supported; no rollback is claimed.
@@ -59,6 +59,14 @@ py -m pip install -e .[dev]
 ```powershell
 repo-cleanroom scan --root F:\GitHub --out-dir .cleanroom
 ```
+
+Optional explicit config:
+
+```powershell
+repo-cleanroom scan --root F:\GitHub --out-dir .cleanroom --config cleanroom.toml
+```
+
+See [`docs/CONFIG.md`](docs/CONFIG.md). Config is never auto-discovered.
 
 Outputs:
 
@@ -156,7 +164,8 @@ Every pull request should keep the safety contract intact:
 - `v0.8.x` — version alignment and pre-release packaging readiness. DONE.
 - `v0.9.x` — public beta stabilization and safety audit. DONE.
 - `v1.0.0` — stable CLI, frozen schemas, safety docs, validation evidence. DONE.
+- `v1.1.0` — additive scan coverage, monorepo detection, explicit scan config, cross-platform CI, publishing workflow/docs. DONE.
 
 ## Status
 
-Stable (v1.0.0). The full SCAN → PLAN → APPROVE → CLEAN → VERIFY → ATTEST pipeline is implemented and CI-tested on Windows, Linux, and macOS across Python 3.11/3.12/3.13. Output schemas are frozen per [`docs/SCHEMA_STABILITY.md`](docs/SCHEMA_STABILITY.md). Removal remains approval-gated with no rollback claim. Not yet published to PyPI.
+Stable (v1.1.0). The full SCAN → PLAN → APPROVE → CLEAN → VERIFY → ATTEST pipeline is implemented and CI-tested on Windows, Linux, and macOS across Python 3.11/3.12/3.13. Output schemas are frozen per [`docs/SCHEMA_STABILITY.md`](docs/SCHEMA_STABILITY.md); v1.1.0 changes are additive only. Removal remains approval-gated with no rollback claim. Not yet published to PyPI.
