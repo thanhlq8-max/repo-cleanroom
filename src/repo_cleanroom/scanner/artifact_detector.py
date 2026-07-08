@@ -8,6 +8,7 @@ from pathlib import Path
 from repo_cleanroom.models import ArtifactRecord, ManifestRecord
 from repo_cleanroom.planners.risk_policy import classify_path
 from repo_cleanroom.safety.symlink_guard import inspect_symlink, is_link_like
+from repo_cleanroom.scanner.scan_config import CUSTOM_ARTIFACT_TYPE, EMPTY_CONFIG, ScanConfig
 from repo_cleanroom.scanner.size_indexer import estimate_path_size
 
 # VCS internals / nested-repo boundaries are never scanned as artifacts.
@@ -72,15 +73,18 @@ ARTIFACT_NAMES = {
 }
 
 
-def _lookup_type(name: str) -> str | None:
+def _lookup_type(name: str, extra_names: frozenset[str] = frozenset()) -> str | None:
     artifact_type = ARTIFACT_NAMES.get(name)
     if artifact_type is None:
         artifact_type = ARTIFACT_NAMES.get(name.lower())
+    if artifact_type is None and name in extra_names:
+        artifact_type = CUSTOM_ARTIFACT_TYPE
     return artifact_type
 
 
-def _build_record(repo: Path, scan_root: Path, candidate: Path) -> ArtifactRecord:
-    artifact_type = _lookup_type(candidate.name)
+def _build_record(
+    repo: Path, scan_root: Path, candidate: Path, artifact_type: str
+) -> ArtifactRecord:
     symlink = inspect_symlink(scan_root, candidate)
     if symlink.is_symlink:
         size_bytes = 0
@@ -111,6 +115,7 @@ def detect_artifacts(
     manifests: list[ManifestRecord] | None = None,
     root: str | Path | None = None,
     max_depth: int = DEFAULT_MAX_DEPTH,
+    config: ScanConfig | None = None,
 ) -> list[ArtifactRecord]:
     """Detect repo-local artifacts, including nested ones in monorepos.
 
@@ -120,9 +125,15 @@ def detect_artifacts(
     subtree is not walked). VCS internals (``.git``/``.hg``/``.svn``) are skipped;
     descent is bounded by ``max_depth`` (repo-relative). ``relative_path`` is the
     POSIX path from the repo root, so top-level artifacts keep their bare name.
+
+    An optional :class:`ScanConfig` can exclude paths (``ignore``) — ignored
+    directories are pruned — and declare ``extra_artifact_names`` (classified by the
+    normal risk policy, so unknown names become REVIEW, never auto-SAFE).
     """
 
     del manifests  # Reserved for future classifier refinement.
+    config = config or EMPTY_CONFIG
+    extra_names = frozenset(config.extra_artifact_names)
     repo = Path(repo_path)
     scan_root = Path(root) if root is not None else repo
     records: list[ArtifactRecord] = []
@@ -132,17 +143,27 @@ def detect_artifacts(
         depth = 0 if current_path == repo else len(current_path.relative_to(repo).parts)
 
         for filename in filenames:
-            if _lookup_type(filename) is not None:
-                records.append(_build_record(repo, scan_root, current_path / filename))
+            child = current_path / filename
+            relative = child.relative_to(repo).as_posix()
+            if config.is_ignored(relative, filename):
+                continue
+            artifact_type = _lookup_type(filename, extra_names)
+            if artifact_type is not None:
+                records.append(_build_record(repo, scan_root, child, artifact_type))
 
         kept: list[str] = []
         for dirname in dirnames:
             child = current_path / dirname
+            relative = child.relative_to(repo).as_posix()
             if dirname in _VCS_DIR_NAMES:
                 continue
-            if _lookup_type(dirname) is not None:
+            if config.is_ignored(relative, dirname):
+                # Explicitly excluded: prune, do not record or descend.
+                continue
+            artifact_type = _lookup_type(dirname, extra_names)
+            if artifact_type is not None:
                 # Record the artifact, then prune: never descend into it.
-                records.append(_build_record(repo, scan_root, child))
+                records.append(_build_record(repo, scan_root, child, artifact_type))
                 continue
             if is_link_like(child):
                 # Never traverse symlinks/junctions during discovery.

@@ -16,6 +16,14 @@ py -m pip install -e .[dev]
 repo-cleanroom scan --root F:\GitHub --out-dir .cleanroom
 ```
 
+The scan finds repo-local artifacts at any depth (monorepo subpackages included).
+An optional `--config <file.toml>` can exclude paths and declare extra artifact
+names — see [`CONFIG.md`](CONFIG.md).
+
+```powershell
+repo-cleanroom scan --root F:\GitHub --out-dir .cleanroom --config cleanroom.toml
+```
+
 ## Plan (PLAN_ONLY — removes nothing)
 
 ```powershell
