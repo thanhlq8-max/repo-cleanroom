@@ -2,7 +2,10 @@
 
 ## Unreleased
 
-- No changes yet.
+- Scan config gained an optional `max_depth` key to override the nested-detection
+  depth cap (repo-relative, default 8; integer ≥ 1). Recorded in the `scan_config`
+  provenance field. Completes user control over nested detection alongside `ignore`
+  and `extra_artifact_names`. Additive; no schema version or enum change.
 
 ## v1.1.0
 
