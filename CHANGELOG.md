@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- No changes yet.
+
+## v1.1.0
+
+Release date: 2026-07-08.
+
+This MINOR release keeps the v1.0.0 safety contract intact while improving scan
+coverage, monorepo handling, operator-controlled scan configuration, cross-platform
+CI coverage, and publishing readiness. All schema changes are additive only; frozen
+schema version fields remain unchanged.
+
 - Optional scan configuration (`scan --config <file.toml>`, `docs/CONFIG.md`):
   - `ignore` — fnmatch globs (matched against the repo-relative POSIX path and the
     basename) exclude paths; ignored directories are pruned.
@@ -50,7 +61,17 @@
   triggered on `release: published`, which would double-publish) and `static.yml`
   (deployed the entire repo root to GitHub Pages on every push — no site content for
   a CLI tool). `publish.yml` is the single publishing workflow.
-- CI/docs only; no package behavior or schema change.
+Safety contract of this release:
+
+- The tool scans, plans, verifies, attests, maps explicit evidence, inventories Docker
+  read-only, renders reports, and generates synthetic demo workspaces. The only
+  mutating cleanup command remains `clean`.
+- `clean` removes solely `SAFE` entries of one byte-exact, human-approved plan,
+  requires the exact plan hash, re-checks root, symlink/junction/reparse, secret,
+  `.git`, and filesystem-boundary guards at delete time, and has no rollback claim.
+- The tool does **not** delete Docker volumes, uninstall global packages, mutate
+  registry/services/PATH, read shell history, execute scanned repository content,
+  or print secret contents.
 
 ## v1.0.0
 

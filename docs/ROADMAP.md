@@ -93,6 +93,20 @@ All release criteria met:
 Post-1.0: PyPI publication (explicit maintainer command per step), then maintenance —
 safety reports first, additive improvements behind the same gates.
 
+## v1.1.0 — additive scan coverage and distribution readiness — DONE
+
+- broader built-in artifact and manifest detection across Node, Python, JVM, PHP,
+  Ruby, Dart, Deno, and Bun ecosystems;
+- nested / monorepo artifact detection with bounded, link-aware traversal;
+- cross-platform CI on Ubuntu, Windows, and macOS to exercise POSIX symlink safety
+  paths as well as Windows-first behavior;
+- explicit `scan --config <file.toml>` support for operator-controlled ignore globs
+  and REVIEW-only custom artifact names;
+- TestPyPI/PyPI trusted-publishing workflow and publishing guide.
+
+All changes are additive. Frozen output schema version fields remain unchanged, and
+the approval-gated cleanup safety contract is unchanged.
+
 ## Permanently out of scope
 
 - PC optimization, malware scanning, registry cleaning;

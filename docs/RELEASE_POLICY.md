@@ -8,8 +8,8 @@ Repo Cleanroom currently uses two version tracks:
 
 | Track | Where | Current value | Meaning |
 |---|---|---|---|
-| Milestone version | CHANGELOG.md, PR/branch names, project state | v1.0.0 | Process/scope increments (docs, tests, hardening) |
-| Package version | `pyproject.toml` `project.version` | `1.0.0` | The installable artifact version |
+| Milestone version | CHANGELOG.md, PR/branch names, project state | v1.1.0 | Process/scope increments (docs, tests, hardening) |
+| Package version | `pyproject.toml` `project.version` | `1.1.0` | The installable artifact version |
 
 This split is intentional during pre-release development. Milestone versions may advance
 without a package release, because most v0.1.x increments change docs, tests, or process —
@@ -69,8 +69,10 @@ From 1.0.0 (semver):
 
 ## 6. Current state under this policy
 
-- Tracks aligned at `1.0.0` (explicit release tasks: v0.8.0 on 2026-07-05,
-  v1.0.0 on 2026-07-06). Tags `v0.8.0` and `v1.0.0` mark the respective merge commits.
+- Tracks aligned at `1.1.0` in the v1.1.0 release PR (explicit release tasks:
+  v0.8.0 on 2026-07-05, v1.0.0 on 2026-07-06, and v1.1.0 on 2026-07-08).
+  Existing tags `v0.8.0` and `v1.0.0` mark their release commits; tag `v1.1.0`
+  is created only after the v1.1.0 release PR is merged.
 - Milestone versions continue to advance via CHANGELOG.md and PR scope names.
 - Each publication step still requires an explicit maintainer command (§3 rule 1 is
   permanent). Mechanics are documented in `docs/PUBLISHING.md`; the

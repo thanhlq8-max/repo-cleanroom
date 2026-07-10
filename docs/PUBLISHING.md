@@ -62,9 +62,10 @@ Order per release policy: **TestPyPI dry run first, then PyPI.**
      on `release: published`), **or**
    - **Actions → Publish → Run workflow**, input `target = pypi`.
 
-> The `v1.0.0` GitHub Release already exists, so re-publishing it will not retrigger
-> the workflow. For the first `1.0.0` upload, use the manual `workflow_dispatch` run
-> (`target = pypi`). Future versions publish automatically when you cut their Release.
+> If a GitHub Release was published before the trusted-publishing workflow existed,
+> re-publishing that same Release will not retrigger the workflow. Use the manual
+> `workflow_dispatch` run (`target = pypi`) for that existing version. Future versions
+> publish automatically when you cut their Release.
 
 ---
 
@@ -131,7 +132,7 @@ py -m twine upload -u __token__ -p $env:PYPI_TOKEN dist/*
 
 - A publishable version must first go through a release PR that bumps
   `pyproject.toml`, updates `CHANGELOG.md`, and aligns docs (release policy §2).
-- The git tag name equals the package version (`v1.0.0` → package `1.0.0`).
+- The git tag name equals the package version (`v1.1.0` → package `1.1.0`).
 - PyPI does not allow re-uploading an existing version. A mistake needs a new PATCH
   release, never an overwrite. Test on TestPyPI first to avoid burning a version.
 
