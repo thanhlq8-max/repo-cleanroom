@@ -133,6 +133,8 @@ def detect_artifacts(
 
     del manifests  # Reserved for future classifier refinement.
     config = config or EMPTY_CONFIG
+    if config.max_depth is not None:
+        max_depth = config.max_depth
     extra_names = frozenset(config.extra_artifact_names)
     repo = Path(repo_path)
     scan_root = Path(root) if root is not None else repo

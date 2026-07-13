@@ -119,6 +119,7 @@ def test_scan_cli_applies_config_and_records_it(tmp_path: Path):
     assert inventory["scan_config"] == {
         "ignore": ["dist"],
         "extra_artifact_names": [".mycache"],
+        "max_depth": None,
     }
 
 
@@ -141,4 +142,36 @@ def test_scan_without_config_records_empty(tmp_path: Path):
     out_dir = tmp_path / "out"
     assert main(["scan", "--root", str(root), "--out-dir", str(out_dir)]) == 0
     inventory = json.loads((out_dir / "artifact_inventory.json").read_text(encoding="utf-8"))
-    assert inventory["scan_config"] == {"ignore": [], "extra_artifact_names": []}
+    assert inventory["scan_config"] == {
+        "ignore": [],
+        "extra_artifact_names": [],
+        "max_depth": None,
+    }
+
+
+def test_config_max_depth_overrides_default(tmp_path: Path):
+    repo = tmp_path / "repo"
+    (repo / "a" / "b" / "node_modules").mkdir(parents=True)
+
+    from repo_cleanroom.scanner.artifact_detector import detect_artifacts
+    from repo_cleanroom.scanner.scan_config import ScanConfig
+
+    # Default depth (8) finds it; a config cap of 2 stops before a/b.
+    assert any(
+        r.relative_path == "a/b/node_modules"
+        for r in detect_artifacts(repo, root=tmp_path, config=ScanConfig())
+    )
+    capped = detect_artifacts(repo, root=tmp_path, config=ScanConfig(max_depth=2))
+    assert capped == []
+
+
+def test_load_scan_config_reads_max_depth(tmp_path: Path):
+    path = _write_config(tmp_path, "max_depth = 12\n")
+    assert load_scan_config(path).max_depth == 12
+
+
+def test_load_scan_config_rejects_bad_max_depth(tmp_path: Path):
+    for bad in ("max_depth = 0\n", "max_depth = -3\n", 'max_depth = "deep"\n', "max_depth = true\n"):
+        path = _write_config(tmp_path, bad)
+        with pytest.raises(ScanConfigError):
+            load_scan_config(path)

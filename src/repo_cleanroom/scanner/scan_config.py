@@ -15,6 +15,9 @@ Format (TOML)::
     # extra directory/file names to also detect; classified by the normal risk
     # policy, so unknown names become REVIEW — never auto-SAFE
     extra_artifact_names = [".mycache", "buildout"]
+
+    # optional override for the nested-detection depth cap (default 8)
+    max_depth = 12
 """
 
 from __future__ import annotations
@@ -39,6 +42,7 @@ class ScanConfig:
 
     ignore: tuple[str, ...] = ()
     extra_artifact_names: tuple[str, ...] = ()
+    max_depth: int | None = None
 
     def is_ignored(self, relative_posix: str, name: str) -> bool:
         """Return True when a candidate should be excluded from detection."""
@@ -48,12 +52,13 @@ class ScanConfig:
                 return True
         return False
 
-    def as_summary(self) -> dict[str, list[str]]:
+    def as_summary(self) -> dict[str, object]:
         """Serializable summary recorded in scan output for provenance."""
 
         return {
             "ignore": list(self.ignore),
             "extra_artifact_names": list(self.extra_artifact_names),
+            "max_depth": self.max_depth,
         }
 
 
@@ -64,6 +69,15 @@ def _require_str_list(value: object, key: str) -> tuple[str, ...]:
     if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
         raise ScanConfigError(f"config field {key!r} must be a list of strings")
     return tuple(value)
+
+
+def _require_positive_int(value: object, key: str) -> int | None:
+    if value is None:
+        return None
+    # bool is a subclass of int; reject it explicitly.
+    if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+        raise ScanConfigError(f"config field {key!r} must be an integer >= 1")
+    return value
 
 
 def load_scan_config(path: str | Path) -> ScanConfig:
@@ -80,10 +94,11 @@ def load_scan_config(path: str | Path) -> ScanConfig:
     except (tomllib.TOMLDecodeError, UnicodeDecodeError) as exc:
         raise ScanConfigError(f"config file is not valid TOML: {exc}") from exc
 
-    unknown = set(data) - {"ignore", "extra_artifact_names"}
+    unknown = set(data) - {"ignore", "extra_artifact_names", "max_depth"}
     if unknown:
         raise ScanConfigError(f"unknown config keys: {sorted(unknown)}")
 
     ignore = _require_str_list(data.get("ignore", []), "ignore")
     extra = _require_str_list(data.get("extra_artifact_names", []), "extra_artifact_names")
-    return ScanConfig(ignore=ignore, extra_artifact_names=extra)
+    max_depth = _require_positive_int(data.get("max_depth"), "max_depth")
+    return ScanConfig(ignore=ignore, extra_artifact_names=extra, max_depth=max_depth)

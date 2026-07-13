@@ -21,9 +21,13 @@ ignore = [
 
 # Extra directory/file names to also detect, beyond the built-in set.
 extra_artifact_names = [".mycache", "buildout"]
+
+# Optional override for how deep nested detection walks (repo-relative). Default 8.
+# Raise it for very deep monorepos; lower it to bound scan cost on huge trees.
+max_depth = 12
 ```
 
-Only these two keys are allowed; unknown keys are rejected.
+Only these three keys are allowed; unknown keys are rejected.
 
 ## Semantics
 
@@ -36,13 +40,18 @@ Only these two keys are allowed; unknown keys are rejected.
   becomes **REVIEW** — never auto-`SAFE`. Config can therefore only make the scan
   detect *less* (ignore) or flag *more as REVIEW* (extra names); it can never widen
   what the tool would propose for removal.
+- **`max_depth`** — overrides the nested-detection depth cap (repo-relative,
+  default 8). Must be an integer ≥ 1. Detected artifacts already prune the walk, so
+  the default suits most repos; raise it for unusually deep monorepos or lower it to
+  bound cost on very large trees.
 
 ## Provenance
 
 The applied config is recorded in `inventory.json` and `artifact_inventory.json`
-under `scan_config` (`{ "ignore": [...], "extra_artifact_names": [...] }`), so a plan
-built from that inventory carries an auditable record of what was excluded. Running
-`scan` without `--config` records an empty `scan_config`.
+under `scan_config` (`{ "ignore": [...], "extra_artifact_names": [...], "max_depth":
+null }`), so a plan built from that inventory carries an auditable record of what was
+excluded. Running `scan` without `--config` records an empty `scan_config`
+(`max_depth: null` meaning the built-in default).
 
 ## Safety note
 
